@@ -73,15 +73,15 @@ def main(args: list[str] = sys.argv[1:]):
         console.print(f"[bold red]Runtime error:[/bold red] {e}")
         exit_code = 51
     except ModelRuntimeError as e:
-        # workbench.CleanupWorkbench() # 清理工作区
+        workbench.CleanupWorkbench() # 清理工作区
         console.print(f"[bold red]Runtime error:[/bold red] {e}")
         exit_code = 52
 
     # 其他异常
-    # except Exception as e:
-    #     workbench.CleanupWorkbench() # 清理工作区
-    #     console.print(f"[bold red]Error:[/bold red] {e}")
-    #     exit_code = 1
+    except Exception as e:
+        workbench.CleanupWorkbench() # 清理工作区
+        console.print(f"[bold red]Error:[/bold red] {e}")
+        exit_code = 1
     except KeyboardInterrupt:
         console.print("\n[bold red]Process interrupted by user.[/bold red]")
         exit_code = 2
@@ -103,9 +103,10 @@ python src/main.py -i "[安達與島村(重製版)]卷01.epub" -m Omni-MiniV2-W2
 python src/main.py -i "test.epub" -o "test"
 
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -s 2
-python src/main.py -i "[終將成為妳]卷04.epub"
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f realcugan-ncnn-vulkan -s 4
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f waifu2x-ncnn-vulkan -s 4 -m models-upconv_7_anime_style_art_rgb
+
+python src/main.py -i "[終將成為妳]卷04.epub"
 """
 if __name__ == "__main__":
     # args = [

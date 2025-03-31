@@ -53,8 +53,11 @@ class Workbench:
         # 将处理后的图片复制到解包目录中（覆盖）
         CopyDir(f"{self.workbench_dir}/himage", f"{self.workbench_dir}/unpack/image")
         # 压缩文件到输出目录
-        MakeDir(GetFileDir(self.options["output_path"]))
-        PackZip(f"{self.workbench_dir}/unpack", self.options["output_path"])
+        output_path = self.options["output_path"]
+        tmp_output_path = f"{GetFileDir(output_path)}/${GetFileNameWithoutExt(output_path)}.tmp"
+        MakeDir(GetFileDir(output_path))
+        PackZip(f"{self.workbench_dir}/unpack", tmp_output_path)
+        MoveFile(tmp_output_path, output_path, exist_ok=True)
         # 删除工作目录
         # self.CleanupWorkbench()
 
