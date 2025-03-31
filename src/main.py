@@ -106,7 +106,7 @@ python src/main.py -i "[安達與島村(重製版)]卷01.epub" -s 2
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f realcugan-ncnn-vulkan -s 4
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f waifu2x-ncnn-vulkan -s 4 -m models-upconv_7_anime_style_art_rgb
 
-python src/main.py -i "[終將成為妳]卷04.epub"
+python src/main.py -i "[終將成為妳]卷04.epub" -m Omni-MiniV2-W2xEX
 """
 if __name__ == "__main__":
     # args = [

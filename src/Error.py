@@ -1,5 +1,4 @@
-
-# 命令行选项错误
+# Command line option errors
 class OptionsError(Exception):
     """Raised when the command line options are invalid."""
     def __init__(self, *args) -> None:
@@ -46,7 +45,7 @@ class NoAvailableModelError(OptionsError):
         super().__init__(*args)
 
 
-# 处理过程中（工作区初始化后）错误
+# Errors during processing (after workbench initialization)
 class FileCorruptedError(RuntimeError):
     """Raised when the EPUB file is corrupted."""
     def __init__(self, *args) -> None:

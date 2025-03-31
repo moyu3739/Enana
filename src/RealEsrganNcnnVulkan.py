@@ -5,9 +5,9 @@ from Family import Family
 
 
 class RealEsrganNcnnVulkan(Family):
-    """Real-ESRGAN-ncnn-vulkan 超分辨率模型系列"""
-    family_name = "realesrgan-ncnn-vulkan" # 系列名称，用于在本地文件系统中查找模型
-    description = "Real-ESRGAN-ncnn-vulkan is a Real-time Image Super-Resolution Model based on Efficient Residual Block." # 系列描述信息
+    """Real-ESRGAN-ncnn-vulkan super-resolution model family"""
+    family_name = "realesrgan-ncnn-vulkan" # family name, used to locate models in the local file system
+    description = "Real-ESRGAN-ncnn-vulkan is a Real-time Image Super-Resolution Model based on Efficient Residual Block." # family description information
 
     def __init__(self, options: dict):
         super().__init__(options)
@@ -16,10 +16,10 @@ class RealEsrganNcnnVulkan(Family):
 
     def ProcessImage(self, input_file: str, output_file: str):
         """
-        处理图片
+        Process image
         Args:
-            input_file: 输入图片文件路径
-            output_file: 输出图片文件路径
+            input_file: Input image file path
+            output_file: Output image file path
         """
         cmd = [
             f"{ROOT}/family/{self.family_name}/{self.family_name}",
@@ -36,12 +36,12 @@ class RealEsrganNcnnVulkan(Family):
     @classmethod
     def GetAllModels(cls) -> list[str]:
         """
-        获取 Real-ESRGAN 系列的所有模型名称
+        Get all model names of Real-ESRGAN-ncnn-vulkan family
         """
-        # 获取模型路径下的所有文件
+        # Get all files under the model path
         files = GetDirList(f"{ROOT}/family/{cls.family_name}/models", "file")
-        # 必须同时有同名的 .bin 和 .param 文件
-        models = ["realesr-animevideov3"] # 默认模型
+        # Must have both .bin and .param files with the same name
+        models = ["realesr-animevideov3"] # Default model
         for file in files:
             if file.endswith(".bin"):
                 model_name = file[:-4]
@@ -52,7 +52,7 @@ class RealEsrganNcnnVulkan(Family):
     @classmethod
     def GetDescription(cls) -> str:
         """
-        获取 Real-ESRGAN 系列的描述信息
+        Get the description information of the Real-ESRGAN family
         """
         return cls.description
 
