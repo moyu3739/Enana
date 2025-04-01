@@ -13,15 +13,15 @@ class CmdUserInterface:
         self.console = Console()
         
     def InitWorkbench(self):
-        # 显示初始化提示，添加旋转图标
+        # Display initialization prompt, add spinner icon
         spinner = Spinner('dots', text="[bold blue]文件预处理...[/bold blue]")
         with Live(spinner, refresh_per_second=10, console=self.console) as live:
             self.workbench.InitWorkbench()
-            # 修改最后的文本，去掉旋转图标
+            # Modify the final text, remove spinner icon
             live.update("[bold green]  文件预处理完成！[/bold green]\n")
 
     def ProcessAllImage(self):
-        # 使用 rich.progress 创建进度条，添加旋转图标（使用默认颜色）
+        # Use rich.progress to create progress bar, add spinner icon (using default color)
         with Progress(
             SpinnerColumn(style="none"),
             TextColumn("{task.description}"),
@@ -29,18 +29,18 @@ class CmdUserInterface:
             TextColumn("{task.completed}/{task.total}"),
             TextColumn("{task.percentage:>3.0f}%")
         ) as progress_bar:
-            # 设置进度条的初始值为已完成的图片数量
+            # Set the initial value of the progress bar to the number of completed images
             task = progress_bar.add_task("[bold blue]图片放大中...[/bold blue]", total=1)
-            # 处理图片
+            # Process images
             for (done_count, total_count) in self.workbench.ProcessAllImage(self.family):
-                progress_bar.update(task, completed=done_count, total=total_count) # 更新进度条
-            progress_bar.update(task, description="[bold green]全部图片放大完成！[/bold green]\n") # 更新进度条到完成状态
+                progress_bar.update(task, completed=done_count, total=total_count) # Update progress bar
+            progress_bar.update(task, description="[bold green]全部图片放大完成！[/bold green]\n") # Update progress bar to completion status
 
     def GenerateTarget(self):
-        # 使用rich显示后处理提示，添加旋转图标
+        # Use rich to display post-processing prompt, add spinner icon
         spinner = Spinner('dots', text="[bold blue]生成目标文件...[/bold blue]")
         with Live(spinner, refresh_per_second=10, console=self.console) as live:
             self.workbench.GenerateTarget()
-            # 修改最后的文本，去掉旋转图标
+            # Modify the final text, remove spinner icon
             live.update("[bold green]  生成目标文件完成！[/bold green]\n")
 

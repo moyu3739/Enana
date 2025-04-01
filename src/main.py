@@ -9,28 +9,28 @@ from UserInterface import CmdUserInterface
 
 
 def main(args: list[str] = sys.argv[1:]):
-    # 创建rich控制台对象
+    # Create rich console object
     console = Console()
     
     try:
         options = ParseOptions(args)
-        # 列出所有系列
+        # List all families
         if options["list_family"]:
             family_list = FamilyList.GetAllFamilies()
             console.print("[bold blue]All available families:[/bold blue]")
             for family in family_list:
                 console.print(f"  - [green]{family}[/green]")
-        # 列出指定系列的所有模型
+        # List all models of specified family
         elif options["list_model"]:
             model_list = FamilyList.GetFamilyClass(options["family"]).GetAllModels()
             console.print(f"[bold blue]All available models of family '{options['family']}':[/bold blue]")
             for model in model_list:
                 console.print(f"  - [green]{model}[/green]")
-        # 处理 EPUB 文件
+        # Process EPUB file
         else:
             family = FamilyList.GetFamilyClass(options["family"])(options)
 
-            # 如果 family 是 CommonFamily，提示用户注意
+            # If family is CommonFamily, alert the user
             if isinstance(family, CommonFamilyBase):
                 console.print(f"[bold yellow]Warning:[/bold yellow] local family '{options['family']}' "\
                                "is not implemented specifically, so be careful using it.")
@@ -44,7 +44,7 @@ def main(args: list[str] = sys.argv[1:]):
 
         exit_code = 0
 
-    # 命令行选项错误
+    # Command line option errors
     except FileNotFoundError as e:
         console.print(f"[bold red]Options error:[/bold red] {e}")
         exit_code = 11
@@ -67,19 +67,19 @@ def main(args: list[str] = sys.argv[1:]):
         console.print(f"[bold red]Options error:[/bold red] {e}")
         exit_code = 17
 
-    # 处理过程中（工作区初始化后）错误
+    # Runtime errors (after workbench initialization)
     except FileCorruptedError as e:
-        workbench.CleanupWorkbench() # 清理工作区
+        workbench.CleanupWorkbench() # Clean up workbench
         console.print(f"[bold red]Runtime error:[/bold red] {e}")
         exit_code = 51
     except ModelRuntimeError as e:
-        workbench.CleanupWorkbench() # 清理工作区
+        workbench.CleanupWorkbench() # Clean up workbench
         console.print(f"[bold red]Runtime error:[/bold red] {e}")
         exit_code = 52
 
-    # 其他异常
+    # Other exceptions
     except Exception as e:
-        workbench.CleanupWorkbench() # 清理工作区
+        workbench.CleanupWorkbench() # Clean up workbench
         console.print(f"[bold red]Error:[/bold red] {e}")
         exit_code = 1
     except KeyboardInterrupt:

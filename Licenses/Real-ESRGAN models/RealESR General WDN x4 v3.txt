@@ -1,0 +1,3 @@
+model: RealESR General WDN x4 v3
+author: xinntao
+license: BSD-3-Clause

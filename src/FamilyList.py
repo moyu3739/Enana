@@ -12,7 +12,7 @@ IMPLEMENTED_FAMILY_LIST = {
 
 def GetAllFamilies() -> list[str]:
     """
-    获取所有超分辨率模型系列的名称，去除重复项
+    Get all super-resolution model family names, removing duplicates
     """
     local_family_set = set(Family.GetAllLocalFamilies())
     implemented_family_set = set(IMPLEMENTED_FAMILY_LIST.keys())
@@ -21,7 +21,7 @@ def GetAllFamilies() -> list[str]:
 
 def GetFamilyClass(family_name: str) -> type[Family]:
     """
-    根据系列名称获取系列对象
+    Get the family class according to the family name
     """
     if family_name not in GetAllFamilies():
         raise FamilyNotFoundError(f"Unknown family '{family_name}'.")

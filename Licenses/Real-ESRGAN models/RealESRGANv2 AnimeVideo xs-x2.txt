@@ -1,0 +1,3 @@
+model: RealESRGANv2 AnimeVideo xs-x2
+author: xinntao
+license: BSD-3-Clause

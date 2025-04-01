@@ -6,52 +6,52 @@ ROOT = "D:/PythonProject/HimageEpub"
 
 
 ##############################################################
-##                  文件和目录操作相关的函数                  ##
+##                Functions for File and Directory Operations ##
 ##############################################################
 
 def UnpackZip(zip_path: str, extract_folder: str):
     """
-    解压缩ZIP文件到指定目录
+    Extract ZIP file to specified directory
     Args:
-        zip_path: ZIP文件路径
-        extract_folder: 解压缩目标目录
+        zip_path: Path of the ZIP file
+        extract_folder: Target directory for extraction
     """
-    # 打开ZIP文件
+    # Open ZIP file
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        # 解压文件到指定目录
+        # Extract files to specified directory
         zip_ref.extractall(extract_folder)
 
 def PackZip(src_folder: str, zip_path: str):
     """
-    将指定目录打包成ZIP文件
+    Package specified directory into a ZIP file
     Args:
-        src_folder: 源目录路径
-        zip_path: ZIP文件路径
+        src_folder: Path of the source directory
+        zip_path: Path of the ZIP file
     """
-    # 创建ZIP文件
+    # Create ZIP file
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_ref:
-        # 遍历目录中的所有文件
+        # Traverse all files in the directory
         for foldername, subfolders, filenames in os.walk(src_folder):
             for filename in filenames:
-                # 拼接完整路径
+                # Concatenate full path
                 file_path = os.path.join(foldername, filename)
-                # 添加到ZIP文件中
+                # Add to ZIP file
                 zip_ref.write(file_path, os.path.relpath(file_path, src_folder))
 
 def GetDirList(dir_path: str, type = "both") -> list[str]:
     """
-    列出目录中的所有文件和子目录
+    List all files and subdirectories in a directory
     Args:
-        dir_path: 目录路径
-        type: 列出文件还是子目录，"file"表示文件，"dir"表示子目录，"both"表示两者都列出
-        return: 目录中的所有文件和子目录列表
+        dir_path: Directory path
+        type: What to list, "file" for files, "dir" for subdirectories, "both" for both
+        return: List of all files and subdirectories in the directory
     """
-    # 检查目录是否存在
+    # Check if directory exists
     if not os.path.exists(dir_path) or not os.path.isdir(dir_path):
         raise FileNotFoundError(f"Directory {dir_path} does not exist or is not a directory.")
-    # 获取目录中的所有文件和子目录
+    # Get all files and subdirectories in the directory
     items = os.listdir(dir_path)
-    # 根据类型过滤
+    # Filter by type
     if type == "file":
         return [item for item in items if os.path.isfile(os.path.join(dir_path, item))]
     elif type == "dir":
@@ -61,94 +61,94 @@ def GetDirList(dir_path: str, type = "both") -> list[str]:
     
 def FileExist(file_path: str) -> bool:
     """
-    检查文件是否存在
+    Check if a file exists
     Args:
-        file_path: 文件路径
-        return: 如果文件存在返回True，否则返回False
+        file_path: File path
+        return: Returns True if the file exists, otherwise returns False
     """
     return os.path.isfile(file_path)
 
 def DirExist(dir_path: str) -> bool:
     """
-    检查目录是否存在
+    Check if a directory exists
     Args:
-        dir_path: 目录路径
-        return: 如果目录存在返回True，否则返回False
+        dir_path: Directory path
+        return: Returns True if the directory exists, otherwise returns False
     """
     return os.path.isdir(dir_path)
 
 def MakeDir(dir_name: str):
     """
-    创建目录
+    Create a directory
     Args:
-        dir_name: 目录名称
+        dir_name: Directory name
     """
-    # 创建目录
+    # Create directory
     os.makedirs(dir_name, exist_ok=True)
 
 def GetFileName(file_path: str) -> str:
     """
-    获取文件名（带扩展名）
+    Get file name (with extension)
     Args:
-        file_path: 文件路径
-        return: 文件名（带扩展名）
+        file_path: File path
+        return: File name (with extension)
     """
     return os.path.basename(file_path)
 
 def GetFileNameWithoutExt(file_path: str) -> str:
     """
-    获取文件名（不带扩展名）
+    Get file name (without extension)
     Args:
-        file_path: 文件路径
-        return: 文件名（不带扩展名）
+        file_path: File path
+        return: File name (without extension)
     """
     return os.path.splitext(os.path.basename(file_path))[0]
 
 def GetFileExt(file_path: str) -> str:
     """
-    获取文件扩展名
+    Get file extension
     Args:
-        file_path: 文件路径
-        return: 文件扩展名
+        file_path: File path
+        return: File extension
     """
     return os.path.splitext(file_path)[1]
 
 def GetFileDir(file_path: str) -> str:
     """
-    获取文件所在目录
+    Get directory containing the file
     Args:
-        file_path: 文件路径
-        return: 文件所在目录
+        file_path: File path
+        return: Directory containing the file
     """
     dir = os.path.dirname(file_path)
     return dir if dir else "."
 
 def CopyFile(src_path: str, dst_path: str):
     """
-    复制文件
+    Copy a file
     Args:
-        src_path: 源文件路径
-        dst_path: 目标文件路径
+        src_path: Source file path
+        dst_path: Destination file path
     """
-    # 复制文件
+    # Copy file
     with open(src_path, 'rb') as src_file:
         with open(dst_path, 'wb') as dest_file:
             dest_file.write(src_file.read())
 
 def CopyDir(src_path: str, dst_path: str):
     """
-    复制目录
+    Copy a directory
     Args:
-        src_path: 源目录路径
-        dst_path: 目标目录路径
+        src_path: Source directory path
+        dst_path: Destination directory path
     """
     MakeDir(dst_path)
-    # 遍历源目录中的所有文件和子目录
+    # Traverse all files and subdirectories in the source directory
     for item in os.listdir(src_path):
-        # 拼接完整路径
+        # Concatenate full path
         src_item = os.path.join(src_path, item)
         dst_item = os.path.join(dst_path, item)
-        # 如果是目录，则递归复制
+        # If it is a directory, recursively copy
         if os.path.isdir(src_item):
             MakeDir(dst_item)
             CopyDir(src_item, dst_item)
@@ -157,20 +157,20 @@ def CopyDir(src_path: str, dst_path: str):
 
 def DeleteFile(file_path: str):
     """
-    删除文件
+    Delete a file
     Args:
-        file_path: 文件路径
+        file_path: File path
     """
-    # 删除文件
+    # Delete file
     os.remove(file_path)
 
 def DeleteDir(dir_path: str):
     """
-    删除目录
+    Delete a directory
     Args:
-        dir_path: 目录路径
+        dir_path: Directory path
     """
-    # 删除目录及其内容
+    # Delete directory and its contents
     for item in os.listdir(dir_path):
         item_path = os.path.join(dir_path, item)
         if os.path.isdir(item_path):
@@ -181,11 +181,11 @@ def DeleteDir(dir_path: str):
 
 def MoveFile(src_path: str, dst_path: str, exist_ok: bool = False):
     """
-    移动文件
+    Move a file
     Args:
-        src_path: 源文件路径
-        dst_path: 目标文件路径
-        exist_ok: 如果目标文件已存在，是否覆盖
+        src_path: Source file path
+        dst_path: Destination file path
+        exist_ok: Whether to overwrite if the destination file already exists
     """
     if exist_ok:
         if FileExist(dst_path): DeleteFile(dst_path)
@@ -198,14 +198,14 @@ def MoveFile(src_path: str, dst_path: str, exist_ok: bool = False):
 
 
 ##############################################################
-##                         其他函数                          ##
+##                       Other Functions                     ##
 ##############################################################
 
 def Ceil(x: float) -> int:
     """
-    向上取整
+    Ceiling function (round up)
     Args:
-        x: 浮点数
-        return: 整数
+        x: Float number
+        return: Integer
     """
     return int(x) + (x % 1 > 0) if x > 0 else int(x)

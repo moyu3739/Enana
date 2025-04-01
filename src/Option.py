@@ -10,7 +10,6 @@ def ParseOptions(args: list[str]):
     #                    dest="continue", 
     #                    help="continue work at interruption of last time. If you use this option, options except -i and -o will be ignored.")
 
-    # 添加列表选项
     parser.add_argument("-lf", "--list-family", action="store_true",
                        dest="list_family",
                        help="list all available super-resolution model families")
@@ -37,28 +36,28 @@ def ParseOptions(args: list[str]):
                        dest="quality",
                        help="image quality level (0-100), default=75")
     
-    # 如果没有给定任何参数，则显示帮助信息
+    # If no arguments are provided, show help information
     if len(args) == 0: 
         parser.print_help()
         parser.exit(0)
 
-    # 解析命令行参数
+    # Parse command line arguments
     options = parser.parse_args(args)
     
-    # 处理特殊模式
+    # Handle special modes
     if options.list_family or options.list_model:
         return vars(options)
     
-    # 正常模式处理
-    # 在标准模式下，需要 -i 参数
+    # Standard mode
+    # In standard mode, -i parameter is required
     if options.input_path is None:
         parser.error("the following arguments are required: -i/--input")
     
-    # 检查 -q 参数范围
+    # Check the range of -q parameter
     if not 0 <= options.quality <= 100:
         raise ImageQualityValueInvalidError(f"Image quality level must be in range [0, 100], but got {options.quality}.")
     
-    # 如果没有给定输出路径，则使用输入路径的目录，输出文件名为输入文件名加上后缀 "_hi"
+    # If no output path is provided, use the directory of input path, output filename will be input filename with suffix "_hi"
     if options.output_path is None:
         options.output_path = f"{GetFileDir(options.input_path)}/{GetFileNameWithoutExt(options.input_path)}_hi{GetFileExt(options.input_path)}"
     
