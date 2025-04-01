@@ -1,6 +1,5 @@
 import abc
 import subprocess
-from PIL import Image
 from utility import *
 from Error import *
 

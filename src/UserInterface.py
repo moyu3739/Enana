@@ -14,11 +14,11 @@ class CmdUserInterface:
         
     def InitWorkbench(self):
         # Display initialization prompt, add spinner icon
-        spinner = Spinner('dots', text="[bold blue]文件预处理...[/bold blue]")
+        spinner = Spinner('dots', text="[bold blue]Pre-processing the file...[/bold blue]")
         with Live(spinner, refresh_per_second=10, console=self.console) as live:
             self.workbench.InitWorkbench()
             # Modify the final text, remove spinner icon
-            live.update("[bold green]  文件预处理完成！[/bold green]\n")
+            live.update("[bold green]  Pre-processing finished![/bold green]\n")
 
     def ProcessAllImage(self):
         # Use rich.progress to create progress bar, add spinner icon (using default color)
@@ -30,17 +30,17 @@ class CmdUserInterface:
             TextColumn("{task.percentage:>3.0f}%")
         ) as progress_bar:
             # Set the initial value of the progress bar to the number of completed images
-            task = progress_bar.add_task("[bold blue]图片放大中...[/bold blue]", total=1)
+            task = progress_bar.add_task("[bold blue]Images processing...[/bold blue]", total=1)
             # Process images
             for (done_count, total_count) in self.workbench.ProcessAllImage(self.family):
                 progress_bar.update(task, completed=done_count, total=total_count) # Update progress bar
-            progress_bar.update(task, description="[bold green]全部图片放大完成！[/bold green]\n") # Update progress bar to completion status
+            progress_bar.update(task, description="[bold green]All images processing finished![/bold green]\n") # Update progress bar to completion status
 
     def GenerateTarget(self):
         # Use rich to display post-processing prompt, add spinner icon
-        spinner = Spinner('dots', text="[bold blue]生成目标文件...[/bold blue]")
+        spinner = Spinner('dots', text="[bold blue]Generating target file...[/bold blue]")
         with Live(spinner, refresh_per_second=10, console=self.console) as live:
             self.workbench.GenerateTarget()
             # Modify the final text, remove spinner icon
-            live.update("[bold green]  生成目标文件完成！[/bold green]\n")
+            live.update("[bold green]  Generating target file finished![/bold green]\n")
 

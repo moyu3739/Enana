@@ -1,13 +1,21 @@
 import os
 import zipfile
+import sys
 
-APP_NAME = "HimageEpub"
-ROOT = "D:/PythonProject/HimageEpub"
+APP_NAME = "himage-epub"
+
+# Set ROOT path according to the running mode of the program
+if getattr(sys, "frozen", False):
+    # Run as a frozen executable, ROOT is the directory of the executable
+    ROOT = os.path.dirname(sys.executable)
+else:
+    # Run as a Python script, ROOT is the parent directory of the script
+    ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-##############################################################
-##                Functions for File and Directory Operations ##
-##############################################################
+##################################################################
+##          Functions for File and Directory Operations         ##
+##################################################################
 
 def UnpackZip(zip_path: str, extract_folder: str):
     """
@@ -198,7 +206,7 @@ def MoveFile(src_path: str, dst_path: str, exist_ok: bool = False):
 
 
 ##############################################################
-##                       Other Functions                     ##
+##                      Other Functions                     ##
 ##############################################################
 
 def Ceil(x: float) -> int:

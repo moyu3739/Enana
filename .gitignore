@@ -1,6 +1,10 @@
-# ignore all files in the root directory except the .gitignore file
-/*.*
-!.gitignore
+build/
+dist/
+main.spec
+
+# ignore all files for test
+/*.epub
+/*.jpg
 
 # ignore all temporary files and folders
 __pycache__/

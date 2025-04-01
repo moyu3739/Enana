@@ -8,7 +8,7 @@ from Workbench import Workbench
 from UserInterface import CmdUserInterface
 
 
-def main(args: list[str] = sys.argv[1:]):
+def CmdMain(args: list[str] = sys.argv[1:]):
     # Create rich console object
     console = Console()
     
@@ -33,7 +33,7 @@ def main(args: list[str] = sys.argv[1:]):
             # If family is CommonFamily, alert the user
             if isinstance(family, CommonFamilyBase):
                 console.print(f"[bold yellow]Warning:[/bold yellow] local family '{options['family']}' "\
-                               "is not implemented specifically, so be careful using it.")
+                               "is not adapted specifically, so it may fail or causes some problems in output file.")
 
             workbench = Workbench(options)
             ui = CmdUserInterface(family, workbench)
@@ -117,4 +117,4 @@ if __name__ == "__main__":
     # ]
     # main(args)
 
-    main()
+    CmdMain()
