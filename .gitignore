@@ -5,6 +5,8 @@ main.spec
 # ignore all files for test
 /*.epub
 /*.jpg
+/*.png
+/*.exe
 
 # ignore all temporary files and folders
 __pycache__/
