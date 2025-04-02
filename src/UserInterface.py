@@ -1,4 +1,4 @@
-from rich.progress import Progress, TextColumn, BarColumn, SpinnerColumn
+from rich.progress import Progress, TextColumn, BarColumn, SpinnerColumn, TimeElapsedColumn
 from rich.console import Console
 from rich.live import Live
 from rich.spinner import Spinner
@@ -27,7 +27,8 @@ class CmdUserInterface:
             TextColumn("{task.description}"),
             BarColumn(),
             TextColumn("{task.completed}/{task.total}"),
-            TextColumn("{task.percentage:>3.0f}%")
+            TextColumn("{task.percentage:>3.0f}%"),
+            TimeElapsedColumn(),  # 添加时间显示组件
         ) as progress_bar:
             # Set the initial value of the progress bar to the number of completed images
             task = progress_bar.add_task("[bold blue]Images processing...[/bold blue]", total=1)

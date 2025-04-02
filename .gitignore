@@ -24,4 +24,3 @@ family/realesrgan-ncnn-vulkan/models/*
 !family/realesrgan-ncnn-vulkan/models/RealESRGANv2-animevideo-xsx4.*
 !family/realesrgan-ncnn-vulkan/models/realesr-general-wdn-x4v3.*
 !family/realesrgan-ncnn-vulkan/models/realesr-general-x4v3.*
-!family/realesrgan-ncnn-vulkan/models/Anime-HQ-W4xEX.*

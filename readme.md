@@ -1,110 +1,134 @@
 # Himage-Epub
 
-一个用于优化 EPUB 电子书中图像质量的工具，使用先进的超分辨率技术提升图像清晰度。
+<div align="center">
+<a href="readme.md">English</a> | <a href="readme.zh.md">简体中文</a>
+</div>
 
-## 功能特点
+----
 
-- 支持多种超分辨率模型系列，目前专门适配了 "realesrgan-ncnn-vulkan" 模型，并对其他模型做了通用性适配（通用性适配不保证程序能正确运行）
-- 可调整图像缩放比例和质量
-- 简单易用的命令行界面
-- 自动处理 EPUB 文件中的所有图像
+A tool for optimizing image quality in EPUB e-books, using advanced super-resolution technology to enhance image clarity.
 
-## 支持模型
-- "realesrgan-ncnn-vulkan": 做了专门适配，基本不会出错
-- "realcugan-ncnn-vulkan": 通用适配可用，基本不会出错
-- "waifu2x-ncnn-vulkan": 通用适配可用，基本不会出错
+## Features
 
-## 添加额外模型
-请按照相应模型系列的目录规则添加模型文件
+- Supports multiple super-resolution model families, with specialized adaptation for the "realesrgan-ncnn-vulkan" model and general adaptation for other models (general adaptation does not guarantee correct program operation)
+- Adjustable image scaling ratio and quality
+- Simple and easy-to-use command line interface
+- Automatically processes all images in EPUB files
 
-## Python 脚本用法
+## Supported Models
+- "realesrgan-ncnn-vulkan": Specially adapted, generally error-free
+- "realcugan-ncnn-vulkan": General adaptation available, generally error-free
+- "waifu2x-ncnn-vulkan": General adaptation available, generally error-free
 
-**请确保目录 `src` 和 `family` 在同一个目录下！**
+### Model Performance and Style Suitability
+
+|Model Family|Model Name|Speed|Quality|Suitable for Anime|Suitable for Realistic|
+|-|-|-|-|-|-|
+|realesrgan-ncnn-vulkan|realesr-animevideov3            |⭐⭐️⭐️⭐️ |⭐️⭐️⭐️   |✅|❌|
+|realesrgan-ncnn-vulkan|realesrgan-x4plus               |⭐️         |⭐️⭐️⭐️⭐️|❌|✅|
+|realesrgan-ncnn-vulkan|realesrgan-x4plus-anime         |⭐️         |⭐️⭐️⭐️⭐️|✅|❌|
+|realesrgan-ncnn-vulkan|RealESRGANv2-animevideo-xsx2    |⭐️⭐️⭐️⭐️ |⭐️        |✅|❌|
+|realesrgan-ncnn-vulkan|RealESRGANv2-animevideo-xsx4    |⭐️⭐️      |⭐️⭐️      |✅|❌|
+|realesrgan-ncnn-vulkan|realesr-general-wdn-x4v3        |⭐️⭐️      |⭐️⭐️⭐️   |✅|✅|
+|realesrgan-ncnn-vulkan|realesr-general-x4v3            |⭐️⭐️      |⭐️⭐️⭐️   |✅|✅|
+|realcugan-ncnn-vulkan|models-se                        |⭐️⭐️      |⭐️⭐️⭐️⭐️ |✅|✅|
+|realcugan-ncnn-vulkan|models-pro                       |⭐️⭐️      |⭐️⭐️⭐️⭐️ |✅|✅|
+|waifu2x-ncnn-vulkan|models-cunet                       |⭐️⭐️      |⭐️⭐️      |✅|❌|
+|waifu2x-ncnn-vulkan|models-upconv_7_anime_style_art_rgb|⭐️⭐️      |⭐️⭐️      |✅|❌|
+|waifu2x-ncnn-vulkan|models-upconv_7_photo              |⭐️⭐️      |⭐️⭐️      |❌|✅|
+
+Ratings are for reference only.
+
+## Adding Additional Models
+Please add model files according to the directory rules of the corresponding model family.
+
+## Python Script Usage
+
+**Please ensure that the directories `src` and `family` are in the same directory!**
 
 ```bash
 cd src
 python main.py -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY]
 ```
 
-### 参数说明
+### Parameter Description
 
-- `-h, --help`: 显示帮助信息
-- `-lf, --list-family`: 列出所有可用的超分辨率模型系列
-- `-lm, --list-model`: 列出特定系列中所有可用的模型（需配合 -f 使用）
-- `-i, --input`: 输入文件路径（必需）
-- `-o, --output`: 输出文件路径（可选，默认为添加"_hi"后缀的输入文件名）
-- `-s, --scale`: 缩放因子（浮点数，范围和默认值取决于所选模型）
-- `-f, --family`: 超分辨率模型系列名称（默认为"realesrgan-ncnn-vulkan"）
-- `-m, --model`: 超分辨率模型名称（默认值取决于所选系列）
-- `-q, --quality`: 图像质量级别（0-100，默认为75）
+- `-h, --help`: Display help information
+- `-lf, --list-family`: List all available super-resolution model families
+- `-lm, --list-model`: List all available models in a specific family (must be used with -f)
+- `-i, --input`: Input file path (required)
+- `-o, --output`: Output file path (optional, default is the input filename with "_hi" suffix)
+- `-s, --scale`: Scaling factor (float, range and default value depend on the selected model)
+- `-f, --family`: Super-resolution model family name (default is "realesrgan-ncnn-vulkan")
+- `-m, --model`: Super-resolution model name (default value depends on the selected family)
+- `-q, --quality`: Image quality level (0-100, default is 75)
 
-### 示例
+### Examples
 
-列出所有可用的模型系列：
+List all available model families:
 ```bash
 python main.py -lf
 ```
 
-列出 realesrgan-ncnn-vulkan 系列中的所有模型：
+List all models in the realesrgan-ncnn-vulkan family:
 ```bash
 python main.py -lm -f realesrgan-ncnn-vulkan
 ```
 
-使用默认设置处理 EPUB 文件：
+Process an EPUB file with default settings:
 ```bash
 python main.py -i book.epub -o book_enhanced.epub
 ```
 
-使用自定义设置处理 EPUB 文件：
+Process an EPUB file with custom settings:
 ```bash
 python main.py -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulkan -m realesrgan-x4plus -q 60
 ```
 
-## 可执行程序用法
+## Executable Program Usage
 
-**请确保文件 `himage-epub.exe` 和 目录 `family` 在同一个目录下！**
+**Please ensure that the file `himage-epub.exe` and the directory `family` are in the same directory!**
 
 ```bash
 ./himage-epub -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY]
 ```
 
-### 参数说明
+### Parameter Description
 
-- `-h, --help`: 显示帮助信息
-- `-lf, --list-family`: 列出所有可用的超分辨率模型系列
-- `-lm, --list-model`: 列出特定系列中所有可用的模型（需配合 -f 使用）
-- `-i, --input`: 输入文件路径（必需）
-- `-o, --output`: 输出文件路径（可选，默认为添加"_hi"后缀的输入文件名）
-- `-s, --scale`: 缩放因子（浮点数，范围和默认值取决于所选模型）
-- `-f, --family`: 超分辨率模型系列名称（默认为"realesrgan-ncnn-vulkan"）
-- `-m, --model`: 超分辨率模型名称（默认值取决于所选系列）
-- `-q, --quality`: 图像质量级别（0-100，默认为75）
+- `-h, --help`: Display help information
+- `-lf, --list-family`: List all available super-resolution model families
+- `-lm, --list-model`: List all available models in a specific family (must be used with -f)
+- `-i, --input`: Input file path (required)
+- `-o, --output`: Output file path (optional, default is the input filename with "_hi" suffix)
+- `-s, --scale`: Scaling factor (float, range and default value depend on the selected model)
+- `-f, --family`: Super-resolution model family name (default is "realesrgan-ncnn-vulkan")
+- `-m, --model`: Super-resolution model name (default value depends on the selected family)
+- `-q, --quality`: Image quality level (0-100, default is 75)
 
-### 示例
+### Examples
 
-列出所有可用的模型系列：
+List all available model families:
 ```bash
 ./himage-epub -lf
 ```
 
-列出 realesrgan-ncnn-vulkan 系列中的所有模型：
+List all models in the realesrgan-ncnn-vulkan family:
 ```bash
 ./himage-epub -lm -f realesrgan-ncnn-vulkan
 ```
 
-使用默认设置处理 EPUB 文件：
+Process an EPUB file with default settings:
 ```bash
 ./himage-epub -i book.epub -o book_enhanced.epub
 ```
 
-使用自定义设置处理 EPUB 文件：
+Process an EPUB file with custom settings:
 ```bash
 ./himage-epub -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulkan -m realesrgan-x4plus -q 60
 ```
 
-## 许可证
+## License
 
-[本项目许可证 MIT License](LICENSE)
+[This project's license - MIT License](LICENSE)
 
-[本项目中使用的超分辨率模型许可证](Licenses)
-
+[License for super-resolution models used in this project](Licenses)
