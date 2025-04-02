@@ -39,8 +39,39 @@ A tool for optimizing image quality in EPUB e-books, using advanced super-resolu
 
 Ratings are for reference only.
 
-## Adding Additional Models
-Please add model files according to the directory rules of the corresponding model family.
+## Adding Additional Models or Model Families
+To add a new model to an existing model family, please add model files according to the directory rules of the corresponding model family. To add a new model family, add the model family directory to the `family` directory, and ensure that the executable file of the family is in the family directory and has the same name as the family directory. The structure of the `family` directory is as follows:
+
+```
+family
+ ├─realcugan-ncnn-vulkan
+ │  ├─models-nose
+ │  │  └─...
+ │  ├─models-pro
+ │  │  └─...
+ │  ├─models-se
+ │  │  └─...
+ │  ├─realcugan-ncnn-vulkan.exe    // Same name as the directory
+ │  └─(other files...)
+ │
+ ├─realesrgan-ncnn-vulkan
+ │  ├─models
+ │  │  └─...
+ │  ├─realesrgan-ncnn-vulkan.exe    // Same name as the directory
+ │  └─(other files...)
+ │
+ ├─waifu2x-ncnn-vulkan
+ │  ├─models-cunet
+ │  │  └─...
+ │  ├─models-upconv_7_anime_style_art_rgb
+ │  │  └─...
+ │  ├─models-upconv_7_photo
+ │  │  └─...
+ │  ├─waifu2x-ncnn-vulkan.exe    // Same name as the directory
+ │  └─(other files...)
+ │
+ └─(other families...)
+```
 
 ## Python Script Usage
 

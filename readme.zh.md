@@ -39,8 +39,39 @@
 
 评价仅供参考。
 
-## 添加额外模型
-请按照相应模型系列的目录规则添加模型文件。
+## 添加额外模型或模型系列
+为一个已有模型系列添加新模型时，请按照相应模型系列的目录规则添加模型文件；添加一个新的模型系列时，请将该模型系列的目录添加到 `family` 目录下，并确保该系列的可执行文件在系列目录下且与系列目录同名。`family` 目录结构如下：
+
+```
+family
+ ├─realcugan-ncnn-vulkan
+ │  ├─models-nose
+ │  │  └─...
+ │  ├─models-pro
+ │  │  └─...
+ │  ├─models-se
+ │  │  └─...
+ │  ├─realcugan-ncnn-vulkan.exe    // 与所在目录同名
+ │  └─(其他文件...)
+ │
+ ├─realesrgan-ncnn-vulkan
+ │  ├─models
+ │  │  └─...
+ │  ├─realesrgan-ncnn-vulkan.exe    // 与所在目录同名
+ │  └─(其他文件...)
+ │
+ ├─waifu2x-ncnn-vulkan
+ │  ├─models-cunet
+ │  │  └─...
+ │  ├─models-upconv_7_anime_style_art_rgb
+ │  │  └─...
+ │  ├─models-upconv_7_photo
+ │  │  └─...
+ │  ├─waifu2x-ncnn-vulkan.exe    // 与所在目录同名
+ │  └─(其他文件...)
+ │
+ └─(其他系列...)
+```
 
 ## Python 脚本用法
 
