@@ -36,7 +36,7 @@ def ParseOptions(args: list[str]):
                        help="image quality level (0-100), default=75")
     parser.add_argument("-r", "--restart", action="store_true",
                        dest="restart",
-                       help="restart progress, otherwise continue progress from last time")
+                       help="force reprocessing all images, otherwise continue progress from last time")
     
     # If no arguments are provided, show help information
     if len(args) == 0: 

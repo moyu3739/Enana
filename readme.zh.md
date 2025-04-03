@@ -82,7 +82,7 @@ family
 
 ```bash
 cd src
-python main.py -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY]
+python main.py -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
 ```
 
 ### 参数说明
@@ -92,10 +92,12 @@ python main.py -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-s S
 - `-lm, --list-model`: 列出特定系列中所有可用的模型（需配合 -f 使用）
 - `-i, --input`: 输入文件路径（必需）
 - `-o, --output`: 输出文件路径（可选，默认为添加 "_hi" 后缀的输入文件名）
+- `-p, --preview`: 输出预览图片
 - `-s, --scale`: 缩放因子（浮点数，范围和默认值取决于所选模型）
 - `-f, --family`: 超分辨率模型系列名称（默认为 "realesrgan-ncnn-vulkan"）
 - `-m, --model`: 超分辨率模型名称（默认值取决于所选系列）
 - `-q, --quality`: 图像质量级别（0-100，默认为75）
+- `-r, --restart`: 强制重新处理全部图片
 
 ### 示例
 
@@ -107,6 +109,16 @@ python main.py -lf
 列出 realesrgan-ncnn-vulkan 系列中的所有模型：
 ```bash
 python main.py -lm -f realesrgan-ncnn-vulkan
+```
+
+使用默认设置生成预览图片：
+```bash
+python main.py -i book.epub -p
+```
+
+使用自定义设置生成预览图片：
+```bash
+python main.py -i book.epub -p -s 2.0 -f realesrgan-ncnn-vulkan -m realesrgan-x4plus -q 60
 ```
 
 使用默认设置处理 EPUB 文件：
@@ -121,10 +133,10 @@ python main.py -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulk
 
 ## 可执行程序用法
 
-**请确保文件 `himage-epub.exe` 和 目录 `family` 在同一个目录下！**
+**请确保文件 `enana.exe` 和 目录 `family` 在同一个目录下！**
 
 ```bash
-./himage-epub -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY]
+enana -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY]
 ```
 
 ### 参数说明
@@ -134,31 +146,43 @@ python main.py -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulk
 - `-lm, --list-model`: 列出特定系列中所有可用的模型（需配合 -f 使用）
 - `-i, --input`: 输入文件路径（必需）
 - `-o, --output`: 输出文件路径（可选，默认为添加 "_hi" 后缀的输入文件名）
+- `-p, --preview`: 输出预览图片
 - `-s, --scale`: 缩放因子（浮点数，范围和默认值取决于所选模型）
 - `-f, --family`: 超分辨率模型系列名称（默认为 "realesrgan-ncnn-vulkan"）
 - `-m, --model`: 超分辨率模型名称（默认值取决于所选系列）
 - `-q, --quality`: 图像质量级别（0-100，默认为75）
+- `-r, --restart`: 强制重新处理全部图片
 
 ### 示例
 
 列出所有可用的模型系列：
 ```bash
-./himage-epub -lf
+enana -lf
 ```
 
 列出 realesrgan-ncnn-vulkan 系列中的所有模型：
 ```bash
-./himage-epub -lm -f realesrgan-ncnn-vulkan
+enana -lm -f realesrgan-ncnn-vulkan
+```
+
+使用默认设置生成预览图片：
+```bash
+enana -i book.epub -p
+```
+
+使用自定义设置生成预览图片：
+```bash
+enana -i book.epub -p -s 2.0 -f realesrgan-ncnn-vulkan -m realesrgan-x4plus -q 60
 ```
 
 使用默认设置处理 EPUB 文件：
 ```bash
-./himage-epub -i book.epub -o book_enhanced.epub
+enana -i book.epub -o book_enhanced.epub
 ```
 
 使用自定义设置处理 EPUB 文件：
 ```bash
-./himage-epub -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulkan -m realesrgan-x4plus -q 60
+enana -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulkan -m realesrgan-x4plus -q 60
 ```
 
 ## 许可证

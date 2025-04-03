@@ -82,7 +82,7 @@ family
 
 ```bash
 cd src
-python main.py -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY]
+python main.py -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
 ```
 
 ### Parameter Description
@@ -92,10 +92,12 @@ python main.py -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-s S
 - `-lm, --list-model`: List all available models in a specific family (must be used with -f)
 - `-i, --input`: Input file path (required)
 - `-o, --output`: Output file path (optional, default is the input filename with "_hi" suffix)
+- `-p, --preview`: Generate preview image
 - `-s, --scale`: Scaling factor (float, range and default value depend on the selected model)
 - `-f, --family`: Super-resolution model family name (default is "realesrgan-ncnn-vulkan")
 - `-m, --model`: Super-resolution model name (default value depends on the selected family)
 - `-q, --quality`: Image quality level (0-100, default is 75)
+- `-r, --restart`: Force reprocessing all images
 
 ### Examples
 
@@ -107,6 +109,16 @@ python main.py -lf
 List all models in the realesrgan-ncnn-vulkan family:
 ```bash
 python main.py -lm -f realesrgan-ncnn-vulkan
+```
+
+Generate a preview image with default settings:
+```bash
+python main.py -i book.epub -p
+```
+
+Generate a preview image with custom settings:
+```bash
+python main.py -i book.epub -p -s 2.0 -f realesrgan-ncnn-vulkan -m realesrgan-x4plus -q 60
 ```
 
 Process an EPUB file with default settings:
@@ -121,10 +133,10 @@ python main.py -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulk
 
 ## Executable Program Usage
 
-**Please ensure that the file `himage-epub.exe` and the directory `family` are in the same directory!**
+**Please ensure that the file `enana.exe` and the directory `family` are in the same directory!**
 
 ```bash
-./himage-epub -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY]
+enana -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY]
 ```
 
 ### Parameter Description
@@ -134,31 +146,43 @@ python main.py -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulk
 - `-lm, --list-model`: List all available models in a specific family (must be used with -f)
 - `-i, --input`: Input file path (required)
 - `-o, --output`: Output file path (optional, default is the input filename with "_hi" suffix)
+- `-p, --preview`: Generate preview image
 - `-s, --scale`: Scaling factor (float, range and default value depend on the selected model)
 - `-f, --family`: Super-resolution model family name (default is "realesrgan-ncnn-vulkan")
 - `-m, --model`: Super-resolution model name (default value depends on the selected family)
 - `-q, --quality`: Image quality level (0-100, default is 75)
+- `-r, --restart`: Force reprocessing all images
 
 ### Examples
 
 List all available model families:
 ```bash
-./himage-epub -lf
+enana -lf
 ```
 
 List all models in the realesrgan-ncnn-vulkan family:
 ```bash
-./himage-epub -lm -f realesrgan-ncnn-vulkan
+enana -lm -f realesrgan-ncnn-vulkan
+```
+
+Generate a preview image with default settings:
+```bash
+enana -i book.epub -p
+```
+
+Generate a preview image with custom settings:
+```bash
+enana -i book.epub -p -s 2.0 -f realesrgan-ncnn-vulkan -m realesrgan-x4plus -q 60
 ```
 
 Process an EPUB file with default settings:
 ```bash
-./himage-epub -i book.epub -o book_enhanced.epub
+enana -i book.epub -o book_enhanced.epub
 ```
 
 Process an EPUB file with custom settings:
 ```bash
-./himage-epub -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulkan -m realesrgan-x4plus -q 60
+enana -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulkan -m realesrgan-x4plus -q 60
 ```
 
 ## License
