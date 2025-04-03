@@ -1,4 +1,4 @@
-# Himage-Epub
+# Enana
 
 <div align="center">
 <a href="readme.md">English</a> | <a href="readme.zh.md">简体中文</a>
@@ -6,7 +6,10 @@
 
 ----
 
-A tool for optimizing image quality in EPUB e-books, using advanced super-resolution technology to enhance image clarity.
+A tool for optimizing image quality in EPUB e-books, using advanced super-resolution neural network technology to enhance image clarity. The name *Enana* comes from:
+- Epub NAtive Neural Amplifier
+- Eikón (icon) NAtive Neural Amplifier
+- Enana's NAtive Neural Amplifier
 
 ## Features
 

@@ -1,4 +1,4 @@
-# Himage-Epub
+# Enana
 
 <div align="center">
 <a href="readme.md">English</a> | <a href="readme.zh.md">简体中文</a>
@@ -6,7 +6,10 @@
 
 ----
 
-一个用于优化 EPUB 电子书中图像质量的工具，使用先进的超分辨率技术提升图像清晰度。
+一个用于优化 EPUB 电子书中图像质量的工具，使用先进的超分辨率神经网络技术提升图像清晰度。名字 Enana 来源于：
+- Epub NAtive Neural Amplifier
+- Eikón (图像) NAtive Neural Amplifier
+- Enana's NAtive Neural Amplifier
 
 ## 功能特点
 
