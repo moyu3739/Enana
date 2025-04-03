@@ -105,7 +105,6 @@ def CmdMain(args: list[str] = sys.argv[1:]):
 python src/main.py -h
 python src/main.py -lf
 python src/main.py -lm
-python src/main.py -c
 python src/main.py -i "test.jpg"
 python src/main.py -i "ha.epub"
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f ha
@@ -114,7 +113,8 @@ python src/main.py -i "[安達與島村(重製版)]卷01 损坏.epub"
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -m Omni-MiniV2-W2xEX -s 4
 python src/main.py -i "test.epub" -o "test"
 
-python src/main.py -i "[安達與島村(重製版)]卷01.epub" -r
+python src/main.py -i "[安達與島村(重製版)]卷01.epub" -s 2 -r
+python src/main.py -i "[安達與島村(重製版)]卷01.epub" -o "an.epub" -m realesrgan-x4plus-anime -s 1.5 -q 60
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -p
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -s 4 -m RealESRGANv2-animevideo-xsx4
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f waifu2x-ncnn-vulkan -m models-upconv_7_anime_style_art_rgb -s 4

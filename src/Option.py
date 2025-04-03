@@ -21,7 +21,7 @@ def ParseOptions(args: list[str]):
                        help="output file path (optional, default is the input filename with \"_enana\" suffix)")
     parser.add_argument("-p", "--preview", action="store_true",
                        dest="preview",
-                       help="to output preview image. If you use this option, the program will choose an image in your EPUB file and output its original and processed copy to the output directory.")
+                       help="to output preview image. If you use this option, the program will choose one image in your EPUB file and output its original and processed copy to the output directory.")
     parser.add_argument("-s", "--scale", action="store", type=float,
                        dest="scale",
                        help="scaling factor (floating number), range and default value depends on the selected model")

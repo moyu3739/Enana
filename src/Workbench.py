@@ -51,14 +51,12 @@ class Workbench:
         if len(images) == 0:
             raise FileCorruptedError(f"Input file '{self.options["input_path"]}' is corrupted or it has no images.")
 
-        # Save options and progress
-        self.WriteOptions()
+        # Save progress
         self.WriteProgress()
 
     def ProcessAllImage(self, family: Family):
         """Returns a generator that yields the number of completed images and total image count each time"""
-        # Read options and progress
-        self.ReadOptions()
+        # Read progress
         self.ReadProgress()
         # Change all images with non-"done" status to "waiting" status (previous processing incomplete), keep images with "done" status unchanged
         for image_path, status in self.progress.items():
@@ -164,14 +162,6 @@ class Workbench:
                 case "JPEG": img.save(output_file, quality=quality_level, optimize=True)
                 case "PNG": img.save(output_file, compress_level=7, optimize=True)
                 case _: img.save(output_file, quality=quality_level, optimize=True)
-
-    def ReadOptions(self) -> dict:
-        with open(f"{self.workbench_dir}/options.json", "r") as f:
-            self.options = json.load(f)
-
-    def WriteOptions(self):
-        with open(f"{self.workbench_dir}/options.json", "w") as f:
-            json.dump(self.options, f, indent=4)
 
     def ReadProgress(self) -> dict[str, str]:
         with open(f"{self.workbench_dir}/progress.json", "r") as f:
