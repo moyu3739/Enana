@@ -13,7 +13,7 @@ A tool for optimizing image quality in EPUB e-books, using advanced super-resolu
 
 ## Features
 
-- Supports multiple super-resolution model families, with specialized adaptation for the "realesrgan-ncnn-vulkan" model and general adaptation for other models (general adaptation does not guarantee correct program operation)
+- Supports multiple super-resolution model families, with specialized adaptation for the "realesrgan-ncnn-vulkan" family and general adaptation for other families (general adaptation does not guarantee correct program operation)
 - Adjustable image scaling ratio and quality
 - Simple and easy-to-use command line interface
 - Automatically processes all images in EPUB files
