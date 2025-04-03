@@ -4,15 +4,15 @@ from Error import *
 
 
 def ParseOptions(args: list[str]):
-    usage = f"{USAGE_PROG} -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p PREVIEW] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r RESTART]"
+    usage = f"{USAGE_PROG} -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]"
     parser = argparse.ArgumentParser(prog=APP_NAME, usage=usage)
 
     parser.add_argument("-lf", "--list-family", action="store_true",
                        dest="list_family",
-                       help="list all available super-resolution model families")
+                       help="to list all available super-resolution model families")
     parser.add_argument("-lm", "--list-model", action="store_true",
                        dest="list_model",
-                       help="list all available models in a specific family (use with -f)")
+                       help="to list all available models in a specific family (use with -f)")
     parser.add_argument("-i", "--input", action="store", type=str,
                        dest="input_path",
                        help="input file path, or just input file name if you use -c option")
@@ -21,7 +21,7 @@ def ParseOptions(args: list[str]):
                        help="output file path")
     parser.add_argument("-p", "--preview", action="store_true",
                        dest="preview",
-                       help="output preview image. If you use this option, the program will choose an image in your EPUB file and output its original and processed copy to the output directory.")
+                       help="to output preview image. If you use this option, the program will choose an image in your EPUB file and output its original and processed copy to the output directory.")
     parser.add_argument("-s", "--scale", action="store", type=float,
                        dest="scale",
                        help="scale factor (floating number), range and default depends on model")
@@ -36,7 +36,7 @@ def ParseOptions(args: list[str]):
                        help="image quality level (0-100), default=75")
     parser.add_argument("-r", "--restart", action="store_true",
                        dest="restart",
-                       help="force reprocessing all images, otherwise continue progress from last time")
+                       help="to force reprocessing all images, otherwise continue from interruption of the last time")
     
     # If no arguments are provided, show help information
     if len(args) == 0: 

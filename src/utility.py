@@ -2,6 +2,7 @@ import os
 import zipfile
 import sys
 
+
 APP_NAME = "enana" # E NAtive Neural Amplifier
 
 # Set ROOT path according to the running mode of the program
