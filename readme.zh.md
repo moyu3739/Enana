@@ -34,8 +34,8 @@
 |realesrgan-ncnn-vulkan|RealESRGANv2-animevideo-xsx4    |⭐️⭐️      |⭐️⭐️      |✅|❌|
 |realesrgan-ncnn-vulkan|realesr-general-wdn-x4v3        |⭐️⭐️      |⭐️⭐️⭐️   |✅|✅|
 |realesrgan-ncnn-vulkan|realesr-general-x4v3            |⭐️⭐️      |⭐️⭐️⭐️   |✅|✅|
-|realcugan-ncnn-vulkan|models-se                        |⭐️⭐️      |⭐️⭐️⭐️⭐️ |✅|✅|
-|realcugan-ncnn-vulkan|models-pro                       |⭐️⭐️      |⭐️⭐️⭐️⭐️ |✅|✅|
+|realcugan-ncnn-vulkan|models-se                        |⭐️⭐️      |⭐️⭐️⭐️⭐️ |✅|❌|
+|realcugan-ncnn-vulkan|models-pro                       |⭐️⭐️      |⭐️⭐️⭐️⭐️ |✅|❌|
 |waifu2x-ncnn-vulkan|models-cunet                       |⭐️⭐️      |⭐️⭐️      |✅|❌|
 |waifu2x-ncnn-vulkan|models-upconv_7_anime_style_art_rgb|⭐️⭐️      |⭐️⭐️      |✅|❌|
 |waifu2x-ncnn-vulkan|models-upconv_7_photo              |⭐️⭐️      |⭐️⭐️      |❌|✅|
