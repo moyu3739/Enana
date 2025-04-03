@@ -6,8 +6,9 @@ from Error import *
 
 class Family(abc.ABC):
     """This is an abstract class representing a family of super-resolution models"""
-    family_name = None # Family name
+    family_name = None # Family name, used to locate models in the local file system
     description = None # Family description
+    supported_image_exts = None # Supported image file extensions, e.g. [".jpg", ".png"]
 
     def __init__(self, options: dict):
         self.options = options
@@ -126,6 +127,7 @@ def MakeCommonFamilyClass(family_name_: str, description_: str = None):
         family_name = family_name_
         description = f"Family '{family_name_}' is a local but not specifically implemented family. So you should use it with caution."\
                       if description_ is None else description_
+        supported_image_exts = [".jpg", ".png", ".webp"]
         
         def __init__(self, options: dict):
             super().__init__(options)
@@ -161,7 +163,10 @@ def MakeCommonFamilyClass(family_name_: str, description_: str = None):
                 try:
                     subprocess.run(cmd2, check=True, shell=True, capture_output=True, text=True)
                 except subprocess.CalledProcessError as e:
-                    raise ModelRuntimeError(f"Model '{self.options["model"]}' of family '{self.options["family"]}' FAILED.") from e
+                    info = f"Model '{self.options["model"]}' of family '{self.options["family"]}' FAILED:\n" \
+                           f"stdout: {e.stdout}\n" \
+                           f"stderr: {e.stderr}"
+                    raise ModelRuntimeError(info) from e
 
         @classmethod
         def GetDescription(cls) -> str:

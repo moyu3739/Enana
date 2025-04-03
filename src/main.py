@@ -1,5 +1,4 @@
 import sys
-from rich.console import Console
 from Option import ParseOptions
 from Error import *
 from Family import *
@@ -10,81 +9,94 @@ from UserInterface import CmdUserInterface
 
 def CmdMain(args: list[str] = sys.argv[1:]):
     # Create rich console object
-    console = Console()
+    ui = CmdUserInterface()
     
     try:
         options = ParseOptions(args)
         # List all families
         if options["list_family"]:
             family_list = FamilyList.GetAllFamilies()
-            console.print("[bold blue]All available families:[/bold blue]")
+            ui.Print("[bold blue]All available families:[/bold blue]")
             for family in family_list:
-                console.print(f"  - [green]{family}[/green]")
+                ui.Print(f"  - [green]{family}[/green]")
         # List all models of specified family
         elif options["list_model"]:
             model_list = FamilyList.GetFamilyClass(options["family"]).GetAllModels()
-            console.print(f"[bold blue]All available models of family '{options['family']}':[/bold blue]")
+            ui.Print(f"[bold blue]All available models of family '{options['family']}':[/bold blue]")
             for model in model_list:
-                console.print(f"  - [green]{model}[/green]")
+                ui.Print(f"  - [green]{model}[/green]")
         # Process EPUB file
         else:
             family = FamilyList.GetFamilyClass(options["family"])(options)
 
             # If family is CommonFamily, alert the user
             if isinstance(family, CommonFamilyBase):
-                console.print(f"[bold yellow]Warning:[/bold yellow] local family '{options['family']}' "\
-                               "is not adapted specifically, so it may fail or causes some problems in output file.")
+                ui.Print(f"[bold yellow][Warning][/bold yellow] local family '{options['family']}' "\
+                          "is not adapted specifically, so it may fail or causes some problems in output file.")
 
             workbench = Workbench(options)
-            ui = CmdUserInterface(family, workbench)
-                
-            ui.InitWorkbench()
-            ui.ProcessAllImage()
-            ui.GenerateTarget()
+            ui.Bound(family, workbench)
+
+            # preview a image
+            if options["preview"]:
+                ui.InitWorkbench()
+                ui.GeneratePreviewImage()
+            # process images
+            else:
+                if options["restart"]:
+                    ui.Print("[bold blue][Info][/bold blue] Restart progress", end="\n\n")
+                    ui.InitWorkbench()
+                elif not workbench.WorkbenchExist():
+                    ui.Print("[bold blue][Info][/bold blue] Checkpoint not found, start progress from scratch", end="\n\n")
+                    ui.InitWorkbench()
+                else:
+                    ui.Print("[bold blue][Info][/bold blue] Checkpoint found, continue progress from last time (if you want to restart, use -r option)", end="\n\n")
+                ui.ProcessAllImage()
+                ui.GenerateEpubTarget()
 
         exit_code = 0
 
     # Command line option errors
     except FileNotFoundError as e:
-        console.print(f"[bold red]Options error:[/bold red] {e}")
+        ui.Print(f"[bold red]Options error:[/bold red] {e}")
         exit_code = 11
     except NotEpubFileError as e:
-        console.print(f"[bold red]Options error:[/bold red] {e}")
+        ui.Print(f"[bold red]Options error:[/bold red] {e}")
         exit_code = 12
     except OutputPathIsDirError as e:
-        console.print(f"[bold red]Options error:[/bold red] {e}")
+        ui.Print(f"[bold red]Options error:[/bold red] {e}")
         exit_code = 13
     except FamilyNotFoundError as e:
-        console.print(f"[bold red]Options error:[/bold red] {e}")
+        ui.Print(f"[bold red]Options error:[/bold red] {e}")
         exit_code = 14
     except ModelNotFoundError as e:
-        console.print(f"[bold red]Options error:[/bold red] {e}")
+        ui.Print(f"[bold red]Options error:[/bold red] {e}")
         exit_code = 15
     except ScaleValueInvalidError as e:
-        console.print(f"[bold red]Options error:[/bold red] {e}")
+        ui.Print(f"[bold red]Options error:[/bold red] {e}")
         exit_code = 16
     except ImageQualityValueInvalidError as e:
-        console.print(f"[bold red]Options error:[/bold red] {e}")
+        ui.Print(f"[bold red]Options error:[/bold red] {e}")
         exit_code = 17
 
     # Runtime errors (after workbench initialization)
     except FileCorruptedError as e:
         workbench.CleanupWorkbench() # Clean up workbench
-        console.print(f"[bold red]Runtime error:[/bold red] {e}")
+        ui.Print(f"[bold red]Runtime error:[/bold red] {e}")
         exit_code = 51
     except ModelRuntimeError as e:
         workbench.CleanupWorkbench() # Clean up workbench
-        console.print(f"[bold red]Runtime error:[/bold red] {e}")
+        ui.Print(f"[bold red]Runtime error:[/bold red] {e}")
         exit_code = 52
 
     # Other exceptions
+    except KeyboardInterrupt:
+        ui.Print("\n[bold red]Process interrupted by user.[/bold red]")
+        exit_code = 2
     except Exception as e:
         workbench.CleanupWorkbench() # Clean up workbench
-        console.print(f"[bold red]Error:[/bold red] {e}")
+        ui.Print(f"[bold red]Error:[/bold red] {e}")
         exit_code = 1
-    except KeyboardInterrupt:
-        console.print("\n[bold red]Process interrupted by user.[/bold red]")
-        exit_code = 2
     
     sys.exit(exit_code)
 
@@ -102,9 +114,11 @@ python src/main.py -i "[安達與島村(重製版)]卷01 损坏.epub"
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -m Omni-MiniV2-W2xEX -s 4
 python src/main.py -i "test.epub" -o "test"
 
+python src/main.py -i "[安達與島村(重製版)]卷01.epub" -r
+python src/main.py -i "[安達與島村(重製版)]卷01.epub" -p
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -s 4 -m RealESRGANv2-animevideo-xsx4
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f waifu2x-ncnn-vulkan -m models-upconv_7_anime_style_art_rgb -s 4
-python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f realcugan-ncnn-vulkan -m models-se -s 4
+python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f realcugan-ncnn-vulkan -m models-se -s 2
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f waifu2x-ncnn-vulkan -s 4 -m models-upconv_7_anime_style_art_rgb
 
 python src/main.py -i "[終將成為妳]卷04.epub" -m Omni-MiniV2-W2xEX

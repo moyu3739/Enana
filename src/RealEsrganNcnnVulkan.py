@@ -6,8 +6,9 @@ from Family import Family
 
 class RealEsrganNcnnVulkan(Family):
     """Real-ESRGAN-ncnn-vulkan super-resolution model family"""
-    family_name = "realesrgan-ncnn-vulkan" # family name, used to locate models in the local file system
+    family_name = "realesrgan-ncnn-vulkan"
     description = "Real-ESRGAN-ncnn-vulkan is a Real-time Image Super-Resolution Model based on Efficient Residual Block." # family description information
+    supported_image_exts = [".jpg", ".png", ".webp"]
 
     def __init__(self, options: dict):
         super().__init__(options)

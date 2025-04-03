@@ -11,8 +11,10 @@ class Workbench:
     def __init__(self, options):
         self.options = options
         self.book_name = GetFileNameWithoutExt(self.options["input_path"])
-        self.workbench_dir = f"{ROOT}/workbench/{self.book_name}" # working directory
-        self.images: list[str] = None # stores image filenames
+        if options["preview"]:
+            self.workbench_dir = f"{ROOT}/workbench/.preview/{self.book_name}" # working directory
+        else:
+            self.workbench_dir = f"{ROOT}/workbench/{self.book_name}" # working directory
         self.progress: dict[str, str] = None # stores image processing progress, key is image filename, value is status ("waiting", "processing", "done")
 
     def CleanupWorkbench(self):
@@ -22,7 +24,17 @@ class Workbench:
         # Delete the working directory
         if DirExist(self.workbench_dir): DeleteDir(self.workbench_dir)
 
-    def InitWorkbench(self):
+    def WorkbenchExist(self) -> bool:
+        """
+        Check if the workbench exists
+        """
+        return DirExist(self.workbench_dir)
+
+    def InitWorkbench(self, image_exts: list[str]):
+        """
+        Args:
+            image_exts: List of image file extensions to be processed, e.g. ['.jpg', '.png']
+        """
         # Create working directory
         if not DirExist(self.workbench_dir):
             MakeDir(self.workbench_dir)
@@ -30,45 +42,27 @@ class Workbench:
             pass # TODO Ask user or raise exception?
 
         # Copy source file to working directory
-        CopyFile(self.options["input_path"], f"{self.workbench_dir}/origin.epub")
+        CopyFile(self.options["input_path"], f"{self.workbench_dir}/original.epub")
         # Unpack source file
-        UnpackZip(f"{self.workbench_dir}/origin.epub", f"{self.workbench_dir}/unpack")
-        # Check if the `image` directory exists in the unpacked directory
-        if not DirExist(f"{self.workbench_dir}/unpack/image"): # If it doesn't exist, the epub source file is corrupted or has no images
-            raise FileCorruptedError(f"Input file '{self.options["input_path"]}' is corrupted or it has no images.")
+        UnpackZip(f"{self.workbench_dir}/original.epub", f"{self.workbench_dir}/unpack")
         # Get image list
-        self.images = GetDirList(f"{self.workbench_dir}/unpack/image", "file")
-        self.progress = {image_name: "waiting" for image_name in self.images}
-        # Create directory for processed images
-        MakeDir(f"{self.workbench_dir}/processed")
+        images = SearchFiles(f"{self.workbench_dir}/unpack", image_exts)
+        self.progress = {image_path: "waiting" for image_path in images}
+        if len(images) == 0:
+            raise FileCorruptedError(f"Input file '{self.options["input_path"]}' is corrupted or it has no images.")
 
         # Save options and progress
         self.WriteOptions()
         self.WriteProgress()
-
-    def GenerateTarget(self):
-        """
-        Generate target file
-        """
-        # Copy processed images to unpacked directory (overwrite)
-        CopyDir(f"{self.workbench_dir}/processed", f"{self.workbench_dir}/unpack/image")
-        # Compress files to output directory
-        output_path = self.options["output_path"]
-        tmp_output_path = f"{GetFileDir(output_path)}/${GetFileNameWithoutExt(output_path)}.tmp"
-        MakeDir(GetFileDir(output_path))
-        PackZip(f"{self.workbench_dir}/unpack", tmp_output_path)
-        MoveFile(tmp_output_path, output_path, exist_ok=True)
-        # Delete working directory
-        # self.CleanupWorkbench()
 
     def ProcessAllImage(self, family: Family):
         """Returns a generator that yields the number of completed images and total image count each time"""
         # Read options and progress
         self.ReadOptions()
         self.ReadProgress()
-        # Change all images with "processing" status to "waiting" status (previous processing incomplete), keep images with "done" status unchanged
-        for image_name, status in self.progress.items():
-            if status == "processing": self.progress[image_name] = "waiting"
+        # Change all images with non-"done" status to "waiting" status (previous processing incomplete), keep images with "done" status unchanged
+        for image_path, status in self.progress.items():
+            if status != "done": self.progress[image_path] = "waiting"
 
         # Get the number of completed images and total image count
         done_count = self.GetStatusCount("done")
@@ -80,23 +74,70 @@ class Workbench:
             done_count += 1
             yield (done_count, total_count)
 
+    def GenerateEpubTarget(self):
+        """
+        Generate EPUB target file
+        """
+        # Compress files to output directory
+        target_path = self.options["output_path"]
+        tmp_target_path = f"{GetFileDir(target_path)}/${GetFileNameWithoutExt(target_path)}.tmp"
+        MakeDir(GetFileDir(target_path))
+        PackZip(f"{self.workbench_dir}/unpack", tmp_target_path)
+        MoveFile(tmp_target_path, target_path, exist_ok=True)
+        # Delete working directory
+        self.CleanupWorkbench()
+
+    def GeneratePreviewImage(self, family: Family):
+        """
+        Generate preview image
+        """
+        # Get the preview image name
+        preview_image_path = self.GetPreviewImage()
+        preview_image_name = GetFileNameWithoutExt(preview_image_path)
+        preview_image_ext = GetFileExt(preview_image_path)
+        # Process image
+        original_path  = preview_image_path
+        processed_path = f"{self.workbench_dir}/preview{preview_image_ext}"
+        family.ProcessImage(original_path, processed_path)
+        self.ScaleAndCompress(processed_path, processed_path, self.options["scale"] / family.model_scale, self.options["quality"])        
+        # Copy original and processed preview image to output directory
+        target_dir = f"{GetFileDir(self.options["output_path"])}"
+        MakeDir(target_dir)
+        CopyFile(
+            original_path,
+            f"{target_dir}/[{APP_NAME}-preview original] {preview_image_name}{preview_image_ext}",
+        )
+        CopyFile(
+            processed_path,
+            f"{target_dir}/[{APP_NAME}-preview processed] {preview_image_name}{preview_image_ext}",
+        )
+        # Delete working directory
+        self.CleanupWorkbench()
+
     def ProcessOneImage(self, family: Family) -> bool:
         """
         Process one image, returns whether there is another image to process
         """
-        image_name = self.GetOneWaitingImage()
-        if image_name is None: return False
-        self.progress[image_name] = "processing"
+        image_path = self.GetOneWaitingImage()
+        if image_path is None: return False
+        self.progress[image_path] = "processing"
         self.WriteProgress()
         # Process image
-        input_file  = f"{self.workbench_dir}/unpack/image/{image_name}"
-        output_file = f"{self.workbench_dir}/processed/{image_name}"
-        family.ProcessImage(input_file, output_file)
-        self.ScaleAndCompress(output_file, output_file, self.options["scale"] / family.model_scale, self.options["quality"])
+        family.ProcessImage(image_path, image_path)
+        self.ScaleAndCompress(image_path, image_path, self.options["scale"] / family.model_scale, self.options["quality"])
 
-        self.progress[image_name] = "done"
+        self.progress[image_path] = "done"
         self.WriteProgress()
         return True
+    
+    def GetPreviewImage(self) -> str:
+        """
+        Get the preview image path.
+        If there is a cover image, return it. Otherwise, return the first image.
+        """
+        for image_path in self.progress.keys():
+            if GetFileNameWithoutExt(image_path).lower() == "cover": return image_path
+        return list(self.progress.keys())[0] # Return the first image name if no cover image is found
     
     @classmethod
     def ScaleAndCompress(cls, input_file: str, output_file: str, scale_ratio: float, quality_level: int):
@@ -144,8 +185,8 @@ class Workbench:
         """
         Get one image name that is waiting to be processed
         """
-        for image_name, status in self.progress.items():
-            if status == "waiting": return image_name
+        for image_path, status in self.progress.items():
+            if status == "waiting": return image_path
         return None
     
     def GetStatusCount(self, count_status: str) -> int:
@@ -153,6 +194,6 @@ class Workbench:
         Count the number of images with the specified status in the current progress
         count_status: Status to count, "waiting", "processing", "done"
         """
-        return len([image_name for image_name, status in self.progress.items() if status == count_status])
+        return len([image_path for image_path, status in self.progress.items() if status == count_status])
 
 

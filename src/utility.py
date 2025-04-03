@@ -2,15 +2,17 @@ import os
 import zipfile
 import sys
 
-APP_NAME = "himage-epub"
+APP_NAME = "enana" # E NAtive Neural Amplifier
 
 # Set ROOT path according to the running mode of the program
 if getattr(sys, "frozen", False):
     # Run as a frozen executable, ROOT is the directory of the executable
     ROOT = os.path.dirname(sys.executable)
+    USAGE_PROG = APP_NAME
 else:
     # Run as a Python script, ROOT is the parent directory of the script
     ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    USAGE_PROG = "python main.py"
 
 
 ##################################################################
@@ -204,6 +206,25 @@ def MoveFile(src_path: str, dst_path: str, exist_ok: bool = False):
             raise FileExistsError(f"Destination file or directory '{dst_path}' already exists.")
         os.rename(src_path, dst_path)
 
+def SearchFiles(dir_path: str, exts: list[str]) -> list[str]:
+    """
+    Search for files with specified extensions in a directory
+    Args:
+        dir_path: Directory path
+        exts: List of file extensions to search for (e.g. ['.jpg', '.png'])
+        return: List of file paths that match the specified extensions
+    """
+    # Check if directory exists
+    if not os.path.isdir(dir_path):
+        raise FileNotFoundError(f"Directory {dir_path} does not exist or is not a directory.")
+    # Search for files with specified extensions
+    files = []
+    for root, _, filenames in os.walk(dir_path):
+        for filename in filenames:
+            if any(filename.endswith(ext) for ext in exts):
+                files.append(os.path.join(root, filename))
+    return files
+
 
 ##############################################################
 ##                      Other Functions                     ##
@@ -217,3 +238,13 @@ def Ceil(x: float) -> int:
         return: Integer
     """
     return int(x) + (x % 1 > 0) if x > 0 else int(x)
+
+
+
+if __name__ == "__main__":
+    # Test the functions
+    exts = [".jpg", ".png"]
+    dir_path = "."
+    files = SearchFiles(dir_path, exts)
+    for file in files:
+        print(file)
