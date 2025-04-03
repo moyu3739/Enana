@@ -15,22 +15,22 @@ def ParseOptions(args: list[str]):
                        help="to list all available models in a specific family (use with -f)")
     parser.add_argument("-i", "--input", action="store", type=str,
                        dest="input_path",
-                       help="input file path, or just input file name if you use -c option")
+                       help="input file path (required)")
     parser.add_argument("-o", "--output", action="store", type=str,
                        dest="output_path",
-                       help="output file path")
+                       help="output file path (optional, default is the input filename with \"_enana\" suffix)")
     parser.add_argument("-p", "--preview", action="store_true",
                        dest="preview",
                        help="to output preview image. If you use this option, the program will choose an image in your EPUB file and output its original and processed copy to the output directory.")
     parser.add_argument("-s", "--scale", action="store", type=float,
                        dest="scale",
-                       help="scale factor (floating number), range and default depends on model")
+                       help="scaling factor (floating number), range and default value depends on the selected model")
     parser.add_argument("-f", "--family", action="store", type=str, default="realesrgan-ncnn-vulkan",
                        dest="family",
                        help="family name of super-resolution models, default=realesrgan-ncnn-vulkan")
     parser.add_argument("-m", "--model", action="store", type=str,
                        dest="model",
-                       help="name of the super-resolution model, default depends on family")
+                       help="name of the super-resolution model, default value depends on the selected family")
     parser.add_argument("-q", "--quality", action="store", type=int, default=75,
                        dest="quality",
                        help="image quality level (0-100), default=75")
@@ -59,9 +59,13 @@ def ParseOptions(args: list[str]):
     if not 0 <= options.quality <= 100:
         raise ImageQualityValueInvalidError(f"Image quality level must be in range [0, 100], but got {options.quality}.")
     
-    # If no output path is provided, use the directory of input path, output filename will be input filename with suffix "_hi"
+    # If no output path is provided, use the directory of input path,
+    # output filename will be input filename with suffix "_enana"
     if options.output_path is None:
-        options.output_path = f"{GetFileDir(options.input_path)}/{GetFileNameWithoutExt(options.input_path)}_hi{GetFileExt(options.input_path)}"
+        output_dir = GetFileDir(options.input_path)
+        output_file_name = f"{GetFileNameWithoutExt(options.input_path)}_{APP_NAME}"
+        output_ext = GetFileExt(options.input_path)
+        options.output_path = f"{output_dir}/{output_file_name}{output_ext}"
     
     return vars(options)
 

@@ -87,17 +87,17 @@ python main.py -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] 
 
 ### Parameter Description
 
-- `-h, --help`: Display help information
-- `-lf, --list-family`: List all available super-resolution model families
-- `-lm, --list-model`: List all available models in a specific family (must be used with -f)
-- `-i, --input`: Input file path (required)
-- `-o, --output`: Output file path (optional, default is the input filename with "_hi" suffix)
-- `-p, --preview`: Generate preview image
-- `-s, --scale`: Scaling factor (float, range and default value depend on the selected model)
-- `-f, --family`: Super-resolution model family name (default is "realesrgan-ncnn-vulkan")
-- `-m, --model`: Super-resolution model name (default value depends on the selected family)
-- `-q, --quality`: Image quality level (0-100, default is 75)
-- `-r, --restart`: Force reprocessing all images
+- `-h, --help`: to display help information
+- `-lf, --list-family`: to list all available super-resolution model families
+- `-lm, --list-model`: to list all available models in a specific family (use with -f)
+- `-i, --input`: input file path (required)
+- `-o, --output`: output file path (optional, default is the input filename with "_enana" suffix)
+- `-p, --preview`: to output preview image. If you use this option, the program will choose an image in your EPUB file and output its original and processed copy to the output directory.
+- `-s, --scale`: scaling factor (floating number), range and default value depends on the selected model
+- `-f, --family`: family name of super-resolution models, default=realesrgan-ncnn-vulkan
+- `-m, --model`: name of the super-resolution model, default value depends on the selected family
+- `-q, --quality`: image quality level (0-100), default=75
+- `-r, --restart`: to force reprocessing all images, otherwise continue from interruption of the last time
 
 ### Examples
 
@@ -141,17 +141,17 @@ enana -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE
 
 ### Parameter Description
 
-- `-h, --help`: Display help information
-- `-lf, --list-family`: List all available super-resolution model families
-- `-lm, --list-model`: List all available models in a specific family (must be used with -f)
-- `-i, --input`: Input file path (required)
-- `-o, --output`: Output file path (optional, default is the input filename with "_hi" suffix)
-- `-p, --preview`: Generate preview image
-- `-s, --scale`: Scaling factor (float, range and default value depend on the selected model)
-- `-f, --family`: Super-resolution model family name (default is "realesrgan-ncnn-vulkan")
-- `-m, --model`: Super-resolution model name (default value depends on the selected family)
-- `-q, --quality`: Image quality level (0-100, default is 75)
-- `-r, --restart`: Force reprocessing all images
+- `-h, --help`: to display help information
+- `-lf, --list-family`: to list all available super-resolution model families
+- `-lm, --list-model`: to list all available models in a specific family (use with -f)
+- `-i, --input`: input file path (required)
+- `-o, --output`: output file path (optional, default is the input filename with "_enana" suffix)
+- `-p, --preview`: to output preview image. If you use this option, the program will choose an image in your EPUB file and output its original and processed copy to the output directory.
+- `-s, --scale`: scaling factor (floating number), range and default value depends on the selected model
+- `-f, --family`: family name of super-resolution models, default=realesrgan-ncnn-vulkan
+- `-m, --model`: name of the super-resolution model, default value depends on the selected family
+- `-q, --quality`: image quality level (0-100), default=75
+- `-r, --restart`: to force reprocessing all images, otherwise continue from interruption of the last time
 
 ### Examples
 
