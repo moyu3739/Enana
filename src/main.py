@@ -32,7 +32,7 @@ def CmdMain(args: list[str] = sys.argv[1:]):
             # If family is CommonFamily, alert the user
             if isinstance(family, CommonFamilyBase):
                 ui.Print(f"[bold yellow][Warning][/bold yellow] local family '{options['family']}' "\
-                          "is not adapted specifically, so it may fail or causes some problems in output file.")
+                          "is not adapted specifically, so it may fail or cause some problems in output file.")
 
             workbench = Workbench(options)
             ui.Bound(family, workbench)
@@ -102,8 +102,6 @@ def CmdMain(args: list[str] = sys.argv[1:]):
 
 
 """
-python -m nuitka --standalone --show-memory --show-progress --mingw64 --no-deployment-flag=self-execution --remove-output --output-dir=release --lto=yes --windows-icon-from-ico=icon/icon.png src/main.py
-
 python src/main.py -h
 python src/main.py -lf
 python src/main.py -lm
@@ -130,6 +128,6 @@ if __name__ == "__main__":
     #     "-f", "realcugan-ncnn-vulkan",
     #     "-m", "models-se"
     # ]
-    # main(args)
+    # CmdMain(args)
 
     CmdMain()

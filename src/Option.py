@@ -4,9 +4,12 @@ from Error import *
 
 
 def ParseOptions(args: list[str]):
-    usage = f"{USAGE_PROG} -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]"
+    usage = f"{USAGE_PROG} -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]"
     parser = argparse.ArgumentParser(prog=APP_NAME, usage=usage)
 
+    parser.add_argument("-v", "--version", action="store_true",
+                       dest="print_version",
+                       help="to print version information")
     parser.add_argument("-lf", "--list-family", action="store_true",
                        dest="list_family",
                        help="to list all available super-resolution model families")
@@ -18,7 +21,7 @@ def ParseOptions(args: list[str]):
                        help="input file path (required)")
     parser.add_argument("-o", "--output", action="store", type=str,
                        dest="output_path",
-                       help="output file path (optional, default is the input filename with \"_enana\" suffix)")
+                       help=f"output file path (optional, default is the input filename with \"_{APP_NAME}\" suffix)")
     parser.add_argument("-p", "--preview", action="store_true",
                        dest="preview",
                        help="to output preview image. If you use this option, the program will choose one image in your EPUB file and output its original and processed copy to the output directory.")
@@ -47,6 +50,9 @@ def ParseOptions(args: list[str]):
     options = parser.parse_args(args)
     
     # Handle special modes
+    if options.print_version:
+        parser._print_message(f"{APP_NAME} version {VERSION}")
+        parser.exit(0)
     if options.list_family or options.list_model:
         return vars(options)
     

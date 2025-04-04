@@ -82,12 +82,13 @@ family
 
 ```bash
 cd src
-python main.py -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
+python main.py -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
 ```
 
 ### 参数说明
 
 - `-h, --help`: 显示帮助信息
+- `-v, --version`: 打印版本信息
 - `-lf, --list-family`: 列出所有可用的超分辨率模型系列
 - `-lm, --list-model`: 列出特定系列中所有可用的模型（需配合 -f 使用）
 - `-i, --input`: 输入文件路径（必需）
@@ -136,12 +137,13 @@ python main.py -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulk
 **请确保文件 `enana.exe` 和 目录 `family` 在同一个目录下！**
 
 ```bash
-enana -h | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
+enana -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
 ```
 
 ### 参数说明
 
 - `-h, --help`: 显示帮助信息
+- `-v, --version`: 打印版本信息
 - `-lf, --list-family`: 列出所有可用的超分辨率模型系列
 - `-lm, --list-model`: 列出特定系列中所有可用的模型（需配合 -f 使用）
 - `-i, --input`: 输入文件路径（必需）

@@ -5,14 +5,12 @@
 !/readme.md
 !/readme.zh.md
 !/LICENSE
+!/pack.py
 
 build/
 dist/
 release/
 icon/__discard/
-
-# ignore family folder in src
-src/family/
 
 # ignore all temporary files and folders
 __pycache__/

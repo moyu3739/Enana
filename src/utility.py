@@ -4,12 +4,14 @@ import sys
 
 
 APP_NAME = "enana" # E NAtive Neural Amplifier
+VERSION = "0.2.1" # Version number
 
-# Set ROOT path according to the running mode of the program
-ROOT = os.path.dirname(sys.executable)
-if sys.argv[0].endswith(".py"):
+# if running with python
+if sys.argv[0].lower().endswith(".py"):
+    ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     USAGE_PROG = f"python {sys.argv[0]}"
 else:
+    ROOT = os.path.dirname(os.path.abspath(__file__))
     USAGE_PROG = APP_NAME
 
 
