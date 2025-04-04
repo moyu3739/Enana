@@ -134,7 +134,7 @@ python main.py -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulk
 
 ## 可执行程序用法
 
-**请确保文件 `enana.exe` 和 目录 `family` 在同一个目录下！**
+从 [releases](https://github.com/moyu3739/Enana/releases) 获取可执行程序。
 
 ```bash
 enana -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]

@@ -134,7 +134,7 @@ python main.py -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulk
 
 ## Executable Program Usage
 
-**Please ensure that the file `enana.exe` and the directory `family` are in the same directory!**
+Get the executable program from [releases](https://github.com/moyu3739/Enana/releases).
 
 ```bash
 enana -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
