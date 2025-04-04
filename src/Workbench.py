@@ -91,7 +91,6 @@ class Workbench:
         """
         # Get the preview image name
         preview_image_path = self.GetPreviewImage()
-        preview_image_name = GetFileNameWithoutExt(preview_image_path)
         preview_image_ext = GetFileExt(preview_image_path)
         # Process image
         original_path  = preview_image_path
@@ -103,11 +102,11 @@ class Workbench:
         MakeDir(target_dir)
         CopyFile(
             original_path,
-            f"{target_dir}/[{APP_NAME}-preview original] {preview_image_name}{preview_image_ext}",
+            f"{target_dir}/[{APP_NAME}-preview] original{preview_image_ext}",
         )
         CopyFile(
             processed_path,
-            f"{target_dir}/[{APP_NAME}-preview processed] {preview_image_name}{preview_image_ext}",
+            f"{target_dir}/[{APP_NAME}-preview] processed{preview_image_ext}",
         )
         # Delete working directory
         self.CleanupWorkbench()
