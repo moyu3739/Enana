@@ -2,8 +2,8 @@
 /*
 !/*/
 !/.gitignore
-!/readme.md
-!/readme.zh.md
+!/README.md
+!/README.zh.md
 !/LICENSE
 !/pack.py
 
