@@ -1,13 +1,18 @@
+# ignore all files at root
+/*
+!/*/
+!/.gitignore
+!/readme.md
+!/readme.zh.md
+!/LICENSE
+
 build/
 dist/
+release/
 icon/__discard/
-*.spec
 
-# ignore all files for test
-/*.epub
-/*.jpg
-/*.png
-/*.exe
+# ignore family folder in src
+src/family/
 
 # ignore all temporary files and folders
 __pycache__/

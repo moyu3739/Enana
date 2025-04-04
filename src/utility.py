@@ -6,14 +6,12 @@ import sys
 APP_NAME = "enana" # E NAtive Neural Amplifier
 
 # Set ROOT path according to the running mode of the program
-if getattr(sys, "frozen", False):
-    # Run as a frozen executable, ROOT is the directory of the executable
-    ROOT = os.path.dirname(sys.executable)
-    USAGE_PROG = APP_NAME
+ROOT = os.path.dirname(sys.executable)
+if sys.argv[0].endswith(".py"):
+    USAGE_PROG = f"python {sys.argv[0]}"
 else:
-    # Run as a Python script, ROOT is the parent directory of the script
-    ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    USAGE_PROG = "python main.py"
+    USAGE_PROG = APP_NAME
+
 
 
 ##################################################################
@@ -59,7 +57,7 @@ def GetDirList(dir_path: str, type = "both") -> list[str]:
     """
     # Check if directory exists
     if not os.path.exists(dir_path) or not os.path.isdir(dir_path):
-        raise FileNotFoundError(f"Directory {dir_path} does not exist or is not a directory.")
+        raise FileNotFoundError(f"Directory '{dir_path}' does not exist or is not a directory.")
     # Get all files and subdirectories in the directory
     items = os.listdir(dir_path)
     # Filter by type
@@ -217,7 +215,7 @@ def SearchFiles(dir_path: str, exts: list[str]) -> list[str]:
     """
     # Check if directory exists
     if not os.path.isdir(dir_path):
-        raise FileNotFoundError(f"Directory {dir_path} does not exist or is not a directory.")
+        raise FileNotFoundError(f"Directory '{dir_path}' does not exist or is not a directory.")
     # Search for files with specified extensions
     files = []
     for root, _, filenames in os.walk(dir_path):
