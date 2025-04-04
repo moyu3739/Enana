@@ -36,7 +36,7 @@ def ParseOptions(args: list[str]):
                        help="name of the super-resolution model, default value depends on the selected family")
     parser.add_argument("-q", "--quality", action="store", type=int, default=75,
                        dest="quality",
-                       help="image quality level (0-100), default=75")
+                       help="image compression quality level (0-100), default=75")
     parser.add_argument("-r", "--restart", action="store_true",
                        dest="restart",
                        help="to force reprocessing all images, otherwise continue from interruption of the last time")

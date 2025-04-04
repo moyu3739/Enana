@@ -98,7 +98,7 @@ python main.py -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] 
 - `-s, --scale`: 缩放因子（浮点数，范围和默认值取决于所选模型）
 - `-f, --family`: 超分辨率模型系列名称（默认为 "realesrgan-ncnn-vulkan"）
 - `-m, --model`: 超分辨率模型名称（默认值取决于所选系列）
-- `-q, --quality`: 图像质量级别（0-100，默认为75）
+- `-q, --quality`: 图像压缩质量级别（0-100，默认为75）
 - `-r, --restart`: 强制重新处理全部图片，**否则将从上次中断处继续**
 
 ### 示例
@@ -153,7 +153,7 @@ enana -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s 
 - `-s, --scale`: 缩放因子（浮点数，范围和默认值取决于所选模型）
 - `-f, --family`: 超分辨率模型系列名称（默认为 "realesrgan-ncnn-vulkan"）
 - `-m, --model`: 超分辨率模型名称（默认值取决于所选系列）
-- `-q, --quality`: 图像质量级别（0-100，默认为75）
+- `-q, --quality`: 图像压缩质量级别（0-100，默认为75）
 - `-r, --restart`: 强制重新处理全部图片，**否则将从上次中断处继续**
 
 ### 示例
