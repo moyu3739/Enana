@@ -17,6 +17,7 @@ A tool for optimizing image quality in EPUB e-books, using advanced super-resolu
 - Adjustable image scaling ratio and quality
 - Simple and easy-to-use command line interface
 - Automatically processes all images in EPUB files
+- Supports interruption recovery. When processing is externally interrupted, it automatically loads previously completed work when given the same input file name next time
 
 ## Supported Models
 - "realesrgan-ncnn-vulkan": Specially adapted, generally error-free
@@ -98,7 +99,7 @@ python main.py -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] 
 - `-f, --family`: family name of super-resolution models, default=realesrgan-ncnn-vulkan
 - `-m, --model`: name of the super-resolution model, default value depends on the selected family
 - `-q, --quality`: image quality level (0-100), default=75
-- `-r, --restart`: to force reprocessing all images, otherwise continue from interruption of the last time
+- `-r, --restart`: to force reprocessing all images, **otherwise continue from interruption of the last time**
 
 ### Examples
 
@@ -153,7 +154,7 @@ enana -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s 
 - `-f, --family`: family name of super-resolution models, default=realesrgan-ncnn-vulkan
 - `-m, --model`: name of the super-resolution model, default value depends on the selected family
 - `-q, --quality`: image quality level (0-100), default=75
-- `-r, --restart`: to force reprocessing all images, otherwise continue from interruption of the last time
+- `-r, --restart`: to force reprocessing all images, **otherwise continue from interruption of the last time**
 
 ### Examples
 

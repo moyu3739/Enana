@@ -17,6 +17,7 @@
 - 可调整图像缩放比例和质量
 - 简单易用的命令行界面
 - 自动处理 EPUB 文件中的所有图像
+- 支持中断恢复，当正常处理图片时被外部中断，下次遇到同名输入文件时自动加载上次中断前已完成的工作
 
 ## 支持模型
 - "realesrgan-ncnn-vulkan": 做了专门适配，基本不会出错
@@ -98,7 +99,7 @@ python main.py -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] 
 - `-f, --family`: 超分辨率模型系列名称（默认为 "realesrgan-ncnn-vulkan"）
 - `-m, --model`: 超分辨率模型名称（默认值取决于所选系列）
 - `-q, --quality`: 图像质量级别（0-100，默认为75）
-- `-r, --restart`: 强制重新处理全部图片，否则将从上次中断处继续
+- `-r, --restart`: 强制重新处理全部图片，**否则将从上次中断处继续**
 
 ### 示例
 
@@ -153,7 +154,7 @@ enana -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s 
 - `-f, --family`: 超分辨率模型系列名称（默认为 "realesrgan-ncnn-vulkan"）
 - `-m, --model`: 超分辨率模型名称（默认值取决于所选系列）
 - `-q, --quality`: 图像质量级别（0-100，默认为75）
-- `-r, --restart`: 强制重新处理全部图片，否则将从上次中断处继续
+- `-r, --restart`: 强制重新处理全部图片，**否则将从上次中断处继续**
 
 ### 示例
 
