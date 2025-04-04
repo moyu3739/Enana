@@ -23,7 +23,7 @@ subprocess.run(args)
 
 # rename 'main.exe' as 'enana.exe'
 MoveFile(f"release/main.dist/main.exe",
-          f"release/main.dist/{APP_NAME}.exe")
+         f"release/main.dist/{APP_NAME}.exe")
 
 # copy directory 'family' to release/main.dist
 CopyDir(f"family", f"release/main.dist/family")
