@@ -136,11 +136,17 @@ def GetFileDir(file_path: str) -> str:
 
 def CopyFile(src_path: str, dst_path: str):
     """
-    Copy a file
+    Copy a file, if the source file and destination file are the same, do nothing
     Args:
         src_path: Source file path
         dst_path: Destination file path
     """
+    # normalize paths
+    src_path = os.path.abspath(src_path)
+    dst_path = os.path.abspath(dst_path)
+    # check if source path is same as destination path
+    if src_path == dst_path: return    
+
     # Copy file
     with open(src_path, 'rb') as src_file:
         with open(dst_path, 'wb') as dest_file:
@@ -153,6 +159,15 @@ def CopyDir(src_path: str, dst_path: str):
         src_path: Source directory path
         dst_path: Destination directory path
     """
+    # normalize paths
+    src_path = os.path.abspath(src_path)
+    dst_path = os.path.abspath(dst_path)
+    # check if source path is same as destination path
+    if src_path == dst_path: return    
+    # check if destination path is a subdirectory of source path
+    if dst_path.startswith(src_path + os.sep):
+        raise ValueError(f"Destination path '{dst_path}' is a subdirectory of source path '{src_path}'")
+    
     MakeDir(dst_path)
     # Traverse all files and subdirectories in the source directory
     for item in os.listdir(src_path):
@@ -175,19 +190,27 @@ def DeleteFile(file_path: str):
     # Delete file
     os.remove(file_path)
 
-def DeleteDir(dir_path: str):
+def ClearDir(dir_path: str):
     """
-    Delete a directory
+    Clear a directory (delete all files and subdirectories)
     Args:
         dir_path: Directory path
     """
-    # Delete directory and its contents
+    # Delete all files and subdirectories in the directory
     for item in os.listdir(dir_path):
         item_path = os.path.join(dir_path, item)
         if os.path.isdir(item_path):
             DeleteDir(item_path)
         else:
             DeleteFile(item_path)
+
+def DeleteDir(dir_path: str):
+    """
+    Delete a directory
+    Args:
+        dir_path: Directory path
+    """
+    ClearDir(dir_path)
     os.rmdir(dir_path)
 
 def MoveFile(src_path: str, dst_path: str, exist_ok: bool = False):
@@ -207,12 +230,13 @@ def MoveFile(src_path: str, dst_path: str, exist_ok: bool = False):
             raise FileExistsError(f"Destination file or directory '{dst_path}' already exists.")
         os.rename(src_path, dst_path)
 
-def SearchFiles(dir_path: str, exts: list[str]) -> list[str]:
+def SearchFiles(dir_path: str, exts: list[str], relative: bool = False) -> list[str]:
     """
     Search for files with specified extensions in a directory
     Args:
         dir_path: Directory path
         exts: List of file extensions to search for (e.g. ['.jpg', '.png'])
+        relative: Whether to return relative paths (True) or absolute paths (False)
         return: List of file paths that match the specified extensions
     """
     # Check if directory exists
@@ -223,7 +247,10 @@ def SearchFiles(dir_path: str, exts: list[str]) -> list[str]:
     for root, _, filenames in os.walk(dir_path):
         for filename in filenames:
             if any(filename.endswith(ext) for ext in exts):
-                files.append(os.path.join(root, filename))
+                file_path = os.path.join(root, filename)
+                if relative:
+                    file_path = os.path.relpath(file_path, dir_path)
+                files.append(file_path)
     return files
 
 
@@ -243,9 +270,11 @@ def Ceil(x: float) -> int:
 
 
 if __name__ == "__main__":
-    # Test the functions
-    exts = [".jpg", ".png"]
-    dir_path = "."
-    files = SearchFiles(dir_path, exts)
-    for file in files:
-        print(file)
+    # # Test the functions
+    # exts = [".jpg", ".png"]
+    # dir_path = "D:/PythonProject/Enana"
+    # files = SearchFiles(dir_path, exts, relative=True)
+    # for file in files:
+    #     print(file)
+
+    DeleteDir("test")

@@ -46,7 +46,7 @@ def CmdMain(args: list[str] = sys.argv[1:]):
                 if options["restart"]:
                     ui.Print("[bold blue][Info][/bold blue] Restart progress", end="\n\n")
                     ui.InitWorkbench()
-                elif not workbench.WorkbenchExist():
+                elif not workbench.WorkbenchInitialized():
                     ui.Print("[bold blue][Info][/bold blue] Checkpoint not found, start progress from scratch", end="\n\n")
                     ui.InitWorkbench()
                 else:
@@ -57,7 +57,7 @@ def CmdMain(args: list[str] = sys.argv[1:]):
         exit_code = 0
 
     # Command line option errors
-    except FileNotFoundError as e:
+    except InputFileNotFoundError as e:
         ui.Print(f"[bold red]Options error:[/bold red] {e}")
         exit_code = 11
     except NotEpubFileError as e:
@@ -115,6 +115,7 @@ python src/main.py -i "[安達與島村(重製版)]卷01.epub" -m Omni-MiniV2-W2
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -s 2 -r
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -o "an.epub" -m realesrgan-x4plus-anime -s 1.5 -q 60
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -p
+python src/main.py -i "[安達與島村(重製版)]卷01.epub" -ps 0.75 -s 4
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -s 4 -m RealESRGANv2-animevideo-xsx4
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f waifu2x-ncnn-vulkan -m models-upconv_7_anime_style_art_rgb -s 4
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f realcugan-ncnn-vulkan -m models-se -s 2
@@ -124,9 +125,10 @@ python src/main.py -i "[終將成為妳]卷04.epub" -m Omni-MiniV2-W2xEX
 if __name__ == "__main__":
     # args = [
     #     "-i", "[安達與島村(重製版)]卷01.epub",
-    #     "-s", "2",
-    #     "-f", "realcugan-ncnn-vulkan",
-    #     "-m", "models-se"
+    #     "-p",
+    #     # "-s", "2",
+    #     # "-f", "realcugan-ncnn-vulkan",
+    #     # "-m", "models-se"
     # ]
     # CmdMain(args)
 

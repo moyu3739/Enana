@@ -22,32 +22,33 @@ class Workbench:
         Clean up the workbench
         """
         # Delete the working directory
-        if DirExist(self.workbench_dir): DeleteDir(self.workbench_dir)
+        # if DirExist(self.workbench_dir): DeleteDir(self.workbench_dir)
+        pass
 
-    def WorkbenchExist(self) -> bool:
+    def WorkbenchInitialized(self) -> bool:
         """
         Check if the workbench exists
         """
-        return DirExist(self.workbench_dir)
+        # progress.json existing is a sign that the workbench has been initialized
+        return FileExist(f"{self.workbench_dir}/progress.json")
 
     def InitWorkbench(self, image_exts: list[str]):
         """
         Args:
             image_exts: List of image file extensions to be processed, e.g. ['.jpg', '.png']
         """
-        # Create working directory
-        if not DirExist(self.workbench_dir):
-            MakeDir(self.workbench_dir)
-        else: # Workbench already contains a book with the same name
-            pass # TODO Ask user or raise exception?
+        if DirExist(self.workbench_dir): DeleteDir(self.workbench_dir) # Delete the working directory if it exists
+        MakeDir(self.workbench_dir) # Create the working directory
 
         # Copy source file to working directory
-        CopyFile(self.options["input_path"], f"{self.workbench_dir}/original.epub")
+        CopyFile(self.options["input_path"], f"{self.workbench_dir}/o.epub")
         # Unpack source file
-        UnpackZip(f"{self.workbench_dir}/original.epub", f"{self.workbench_dir}/unpack")
+        UnpackZip(f"{self.workbench_dir}/o.epub", f"{self.workbench_dir}/original")
+        if not self.options["preview"]:
+            CopyDir(f"{self.workbench_dir}/original", f"{self.workbench_dir}/processed")
         # Get image list
-        images = SearchFiles(f"{self.workbench_dir}/unpack", image_exts)
-        self.progress = {image_path: "waiting" for image_path in images}
+        images = SearchFiles(f"{self.workbench_dir}/original", image_exts, relative=True)
+        self.progress = {image_relpath: "waiting" for image_relpath in images}
         if len(images) == 0:
             raise FileCorruptedError(f"Input file '{self.options["input_path"]}' is corrupted or it has no images.")
 
@@ -80,7 +81,7 @@ class Workbench:
         target_path = self.options["output_path"]
         tmp_target_path = f"{GetFileDir(target_path)}/${GetFileNameWithoutExt(target_path)}.tmp"
         MakeDir(GetFileDir(target_path))
-        PackZip(f"{self.workbench_dir}/unpack", tmp_target_path)
+        PackZip(f"{self.workbench_dir}/processed", tmp_target_path)
         MoveFile(tmp_target_path, target_path, exist_ok=True)
         # Delete working directory
         self.CleanupWorkbench()
@@ -90,12 +91,13 @@ class Workbench:
         Generate preview image
         """
         # Get the preview image name
-        preview_image_path = self.GetPreviewImage()
-        preview_image_ext = GetFileExt(preview_image_path)
+        preview_image_relpath = self.GetPreviewImage()
+        preview_image_ext = GetFileExt(preview_image_relpath)
         # Process image
-        original_path  = preview_image_path
+        original_path  = f"{self.workbench_dir}/original/{preview_image_relpath}"
         processed_path = f"{self.workbench_dir}/preview{preview_image_ext}"
-        family.ProcessImage(original_path, processed_path)
+        self.ScaleAndCompress(original_path, processed_path, self.options["pre_scale"], 100)
+        family.ProcessImage(processed_path, processed_path)
         self.ScaleAndCompress(processed_path, processed_path, self.options["scale"] / family.model_scale, self.options["quality"])        
         # Copy original and processed preview image to output directory
         target_dir = f"{GetFileDir(self.options["output_path"])}"
@@ -115,15 +117,21 @@ class Workbench:
         """
         Process one image, returns whether there is another image to process
         """
-        image_path = self.GetOneWaitingImage()
-        if image_path is None: return False
-        self.progress[image_path] = "processing"
+        image_relpath = self.GetOneWaitingImage()
+        if image_relpath is None: return False # No more images to process
+        original_path = f"{self.workbench_dir}/original/{image_relpath}"
+        processed_path = f"{self.workbench_dir}/processed/{image_relpath}"
+        
+        self.progress[image_relpath] = "processing"
         self.WriteProgress()
-        # Process image
-        family.ProcessImage(image_path, image_path)
-        self.ScaleAndCompress(image_path, image_path, self.options["scale"] / family.model_scale, self.options["quality"])
+        # Pre-scale image
+        self.ScaleAndCompress(original_path, processed_path, self.options["pre_scale"], 100)
+        # Process image with super-resolution model
+        family.ProcessImage(processed_path, processed_path)
+        # Scale and compress image
+        self.ScaleAndCompress(processed_path, processed_path, self.options["scale"] / family.model_scale, self.options["quality"])
 
-        self.progress[image_path] = "done"
+        self.progress[image_relpath] = "done"
         self.WriteProgress()
         return True
     
@@ -132,10 +140,18 @@ class Workbench:
         Get the preview image path.
         If there is a cover image, return it. Otherwise, return the first image.
         """
-        for image_path in self.progress.keys():
-            if GetFileNameWithoutExt(image_path).lower() == "cover": return image_path
+        for image_relpath in self.progress.keys():
+            if GetFileNameWithoutExt(image_relpath).lower() == "cover": return image_relpath
         return list(self.progress.keys())[0] # Return the first image name if no cover image is found
     
+    def GetOneWaitingImage(self) -> str | None:
+        """
+        Get one image name that is waiting to be processed
+        """
+        for image_relpath, status in self.progress.items():
+            if status == "waiting": return image_relpath
+        return None
+
     @classmethod
     def ScaleAndCompress(cls, input_file: str, output_file: str, scale_ratio: float, quality_level: int):
         """
@@ -146,6 +162,10 @@ class Workbench:
             scale_ratio: Scale ratio
             quality_level: Quality level (0-100), higher value means less compression
         """
+        if scale_ratio == 1.0 and quality_level == 100:
+            CopyFile(input_file, output_file)
+            return
+
         # Open image
         img = Image.open(input_file)
         
@@ -156,11 +176,10 @@ class Workbench:
             # Scale image (using high-quality LANCZOS resampling)
             img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
         
-        if quality_level < 100:
-            match img.format:
-                case "JPEG": img.save(output_file, quality=quality_level, optimize=True)
-                case "PNG": img.save(output_file, compress_level=7, optimize=True)
-                case _: img.save(output_file, quality=quality_level, optimize=True)
+        match img.format:
+            case "JPEG": img.save(output_file, quality=quality_level, optimize=True)
+            case "PNG": img.save(output_file, compress_level=7, optimize=True)
+            case _: img.save(output_file, quality=quality_level, optimize=True)
 
     def ReadProgress(self) -> dict[str, str]:
         with open(f"{self.workbench_dir}/progress.json", "r") as f:
@@ -169,14 +188,6 @@ class Workbench:
     def WriteProgress(self):
         with open(f"{self.workbench_dir}/progress.json", "w") as f:
             json.dump(self.progress, f, indent=4)
-
-    def GetOneWaitingImage(self) -> str | None:
-        """
-        Get one image name that is waiting to be processed
-        """
-        for image_path, status in self.progress.items():
-            if status == "waiting": return image_path
-        return None
     
     def GetStatusCount(self, count_status: str) -> int:
         """

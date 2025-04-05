@@ -25,6 +25,9 @@ def ParseOptions(args: list[str]):
     parser.add_argument("-p", "--preview", action="store_true",
                        dest="preview",
                        help="to output preview image. If you use this option, the program will choose one image in your EPUB file and output its original and processed copy to the output directory.")
+    parser.add_argument("-ps", "--pre-scale", action="store", type=float, default=1.0,
+                       dest="pre_scale",
+                       help="pre-scaling factor (floating number), applied before super-resolution, default=1.0")
     parser.add_argument("-s", "--scale", action="store", type=float,
                        dest="scale",
                        help="scaling factor (floating number), range and default value depends on the selected model")

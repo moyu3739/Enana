@@ -95,6 +95,7 @@ python main.py -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] 
 - `-i, --input`: input file path (required)
 - `-o, --output`: output file path (optional, default is the input filename with "_enana" suffix)
 - `-p, --preview`: to output preview image. If you use this option, the program will choose one image in your EPUB file and output its original and processed copy to the output directory.
+- `-ps, --pre-scale`: pre-scaling factor (floating number), applied before super-resolution, default=1.0
 - `-s, --scale`: scaling factor (floating number), range and default value depends on the selected model
 - `-f, --family`: family name of super-resolution models, default=realesrgan-ncnn-vulkan
 - `-m, --model`: name of the super-resolution model, default value depends on the selected family
@@ -150,6 +151,7 @@ enana -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s 
 - `-i, --input`: input file path (required)
 - `-o, --output`: output file path (optional, default is the input filename with "_enana" suffix)
 - `-p, --preview`: to output preview image. If you use this option, the program will choose one image in your EPUB file and output its original and processed copy to the output directory.
+- `-ps, --pre-scale`: pre-scaling factor (floating number), applied before super-resolution, default=1.0
 - `-s, --scale`: scaling factor (floating number), range and default value depends on the selected model
 - `-f, --family`: family name of super-resolution models, default=realesrgan-ncnn-vulkan
 - `-m, --model`: name of the super-resolution model, default value depends on the selected family
