@@ -1,8 +1,10 @@
-import json
+import threading
+import concurrent.futures
 from PIL import Image
 from utility import *
 from Error import *
 from Family import Family
+from Progress import Progress
 
 
 class Workbench:
@@ -15,15 +17,14 @@ class Workbench:
             self.workbench_dir = f"{ROOT}/workbench/.preview/{self.book_name}" # working directory
         else:
             self.workbench_dir = f"{ROOT}/workbench/{self.book_name}" # working directory
-        self.progress: dict[str, str] = None # stores image processing progress, key is image filename, value is status ("waiting", "processing", "done")
+        self.progress = Progress()
 
     def CleanupWorkbench(self):
         """
         Clean up the workbench
         """
         # Delete the working directory
-        # if DirExist(self.workbench_dir): DeleteDir(self.workbench_dir)
-        pass
+        if DirExist(self.workbench_dir): DeleteDir(self.workbench_dir)
 
     def WorkbenchInitialized(self) -> bool:
         """
@@ -48,7 +49,7 @@ class Workbench:
             CopyDir(f"{self.workbench_dir}/original", f"{self.workbench_dir}/processed")
         # Get image list
         images = SearchFiles(f"{self.workbench_dir}/original", image_exts, relative=True)
-        self.progress = {image_relpath: "waiting" for image_relpath in images}
+        self.progress.LoadTasks(images)
         if len(images) == 0:
             raise FileCorruptedError(f"Input file '{self.options["input_path"]}' is corrupted or it has no images.")
 
@@ -59,19 +60,16 @@ class Workbench:
         """Returns a generator that yields the number of completed images and total image count each time"""
         # Read progress
         self.ReadProgress()
-        # Change all images with non-"done" status to "waiting" status (previous processing incomplete), keep images with "done" status unchanged
-        for image_path, status in self.progress.items():
-            if status != "done": self.progress[image_path] = "waiting"
+        self.progress.RefreshUndoneTask()
 
-        # Get the number of completed images and total image count
-        done_count = self.GetStatusCount("done")
-        total_count = len(self.progress)
-        yield (done_count, total_count)
-        
         # Process images
-        while self.ProcessOneImage(family):
-            done_count += 1
-            yield (done_count, total_count)
+        def Process(t_id):
+            while self.ProcessOneImage(family): pass
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.options["jobs"]) as executor:
+            # use list() to force the generator to run to get exceptions,
+            # if a sub-thread raises an exception, it will be re-raised here
+            list(executor.map(Process, range(self.options["jobs"])))
 
     def GenerateEpubTarget(self):
         """
@@ -117,12 +115,11 @@ class Workbench:
         """
         Process one image, returns whether there is another image to process
         """
-        image_relpath = self.GetOneWaitingImage()
+        image_relpath = self.progress.GetOneTaskOfStatusAndUpdate("waiting", "processing")
         if image_relpath is None: return False # No more images to process
         original_path = f"{self.workbench_dir}/original/{image_relpath}"
         processed_path = f"{self.workbench_dir}/processed/{image_relpath}"
         
-        self.progress[image_relpath] = "processing"
         self.WriteProgress()
         # Pre-scale image
         self.ScaleAndCompress(original_path, processed_path, self.options["pre_scale"], 100)
@@ -131,7 +128,7 @@ class Workbench:
         # Scale and compress image
         self.ScaleAndCompress(processed_path, processed_path, self.options["scale"] / family.model_scale, self.options["quality"])
 
-        self.progress[image_relpath] = "done"
+        self.progress.Update(image_relpath, "done")
         self.WriteProgress()
         return True
     
@@ -140,17 +137,23 @@ class Workbench:
         Get the preview image path.
         If there is a cover image, return it. Otherwise, return the first image.
         """
-        for image_relpath in self.progress.keys():
+        for image_relpath in self.progress.tasks.keys():
             if GetFileNameWithoutExt(image_relpath).lower() == "cover": return image_relpath
-        return list(self.progress.keys())[0] # Return the first image name if no cover image is found
-    
-    def GetOneWaitingImage(self) -> str | None:
+        return list(self.progress.tasks.keys())[0] # Return the first image name if no cover image is found
+
+    def ReadProgress(self):
+        self.progress.Load(f"{self.workbench_dir}/progress.json")
+
+    def WriteProgress(self):
+        self.progress.Dump(f"{self.workbench_dir}/progress.json")
+
+    def GetProgressStatistics(self):
         """
-        Get one image name that is waiting to be processed
+        Get the number of completed images and total image count
         """
-        for image_relpath, status in self.progress.items():
-            if status == "waiting": return image_relpath
-        return None
+        done_count = self.progress.GetTaskNumOfStatus("done")
+        total_count = self.progress.GetTaskNum()
+        return (done_count, total_count)
 
     @classmethod
     def ScaleAndCompress(cls, input_file: str, output_file: str, scale_ratio: float, quality_level: int):
@@ -180,20 +183,5 @@ class Workbench:
             case "JPEG": img.save(output_file, quality=quality_level, optimize=True)
             case "PNG": img.save(output_file, compress_level=7, optimize=True)
             case _: img.save(output_file, quality=quality_level, optimize=True)
-
-    def ReadProgress(self) -> dict[str, str]:
-        with open(f"{self.workbench_dir}/progress.json", "r") as f:
-            self.progress = json.load(f)
-
-    def WriteProgress(self):
-        with open(f"{self.workbench_dir}/progress.json", "w") as f:
-            json.dump(self.progress, f, indent=4)
-    
-    def GetStatusCount(self, count_status: str) -> int:
-        """
-        Count the number of images with the specified status in the current progress
-        count_status: Status to count, "waiting", "processing", "done"
-        """
-        return len([image_path for image_path, status in self.progress.items() if status == count_status])
 
 

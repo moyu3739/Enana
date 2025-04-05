@@ -75,9 +75,15 @@ def CmdMain(args: list[str] = sys.argv[1:]):
     except ScaleValueInvalidError as e:
         ui.Print(f"[bold red]Options error:[/bold red] {e}")
         exit_code = 16
-    except ImageQualityValueInvalidError as e:
+    except PreScaleValueInvalidError as e:
         ui.Print(f"[bold red]Options error:[/bold red] {e}")
         exit_code = 17
+    except ImageQualityValueInvalidError as e:
+        ui.Print(f"[bold red]Options error:[/bold red] {e}")
+        exit_code = 18
+    except JobsValueInvalidError as e:
+        ui.Print(f"[bold red]Options error:[/bold red] {e}")
+        exit_code = 19
 
     # Runtime errors (after workbench initialization)
     except FileCorruptedError as e:
@@ -113,23 +119,28 @@ python src/main.py -i "[安達與島村(重製版)]卷01.epub" -m ha
 python src/main.py -i "[安達與島村(重製版)]卷01 损坏.epub"
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -m Omni-MiniV2-W2xEX -s 4
 
-python src/main.py -i "[安達與島村(重製版)]卷01.epub" -s 2 -r
+python src/main.py -i "[安達與島村(重製版)]卷01.epub" -s 2 -j 2
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -o "an.epub" -m realesrgan-x4plus-anime -s 1.5 -q 60
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -p
-python src/main.py -i "[安達與島村(重製版)]卷01.epub" -ps 0.75 -s 4
+python src/main.py -i "[安達與島村(重製版)]卷01.epub" -ps 0.1 -p
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -s 4 -m RealESRGANv2-animevideo-xsx4
 python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f waifu2x-ncnn-vulkan -m models-upconv_7_anime_style_art_rgb -s 4
-python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f realcugan-ncnn-vulkan -m models-se -s 2
+python src/main.py -i "[安達與島村(重製版)]卷01.epub" -f realcugan-ncnn-vulkan -m models-se -s 5 -r -j 4
 
-python src/main.py -i "[終將成為妳]卷04.epub" -m Omni-MiniV2-W2xEX
+python src/main.py -i "[終將成為妳]卷04.epub" -s 2
 """
 if __name__ == "__main__":
     # args = [
     #     "-i", "[安達與島村(重製版)]卷01.epub",
     #     "-p",
-    #     # "-s", "2",
-    #     # "-f", "realcugan-ncnn-vulkan",
-    #     # "-m", "models-se"
+    #     "-ps", "-1",
+    # ]
+    # args = [
+    #     "-i", "[安達與島村(重製版)]卷01.epub",
+    #     "-f", "realcugan-ncnn-vulkan",
+    #     "-m", "models-se",
+    #     "-s", "5",
+    #     "-r",
     # ]
     # CmdMain(args)
 

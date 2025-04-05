@@ -53,8 +53,8 @@ class Family(abc.ABC):
             # The actual scaling factor must be between 1 and model_scale
             if not 1.0 < self.options["scale"] <= self.model_scale:
                 raise ScaleValueInvalidError(f"Scale factor must in range (1, {self.model_scale}] "\
-                                            f"for model '{self.options["model"]}' of family '{self.family_name}', "\
-                                            f"but got {self.options["scale"]}.")
+                                             f"for model '{self.options["model"]}' of family '{self.family_name}', "\
+                                             f"but got {self.options["scale"]}.")
         else: # Cannot parse the model scaling factor from the model name
             # If no actual scaling factor is given, use the default actual scaling factor 2
             if self.options["scale"] is None: self.options["scale"] = 2

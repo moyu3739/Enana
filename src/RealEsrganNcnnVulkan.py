@@ -32,7 +32,10 @@ class RealEsrganNcnnVulkan(Family):
         try:
             subprocess.run(cmd, check=True, shell=True, capture_output=True, text=True)
         except subprocess.CalledProcessError as e:
-            raise ModelRuntimeError(f"Model '{self.options["model"]}' of family '{self.family_name}' FAILED.") from e
+            info = f"Model '{self.options["model"]}' of family '{self.options["family"]}' FAILED:\n" \
+                   f"stdout: {e.stdout}\n" \
+                   f"stderr: {e.stderr}"
+            raise ModelRuntimeError(info) from e
 
     @classmethod
     def GetAllModels(cls) -> list[str]:

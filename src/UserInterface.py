@@ -1,3 +1,5 @@
+import time
+import threading
 from rich.progress import Progress, TextColumn, BarColumn, SpinnerColumn, TimeElapsedColumn
 from rich.console import Console
 from rich.live import Live
@@ -35,14 +37,50 @@ class CmdUserInterface:
             BarColumn(),
             TextColumn("{task.completed}/{task.total}"),
             TextColumn("{task.percentage:>3.0f}%"),
-            TimeElapsedColumn(),  # 添加时间显示组件
+            TimeElapsedColumn(),
         ) as progress_bar:
-            # Set the initial value of the progress bar to the number of completed images
+            # Set the initial value of the progress bar
             task = progress_bar.add_task("[bold blue]Images processing...[/bold blue]", total=1)
-            # Process images
-            for (done_count, total_count) in self.workbench.ProcessAllImage(self.family):
-                progress_bar.update(task, completed=done_count, total=total_count) # Update progress bar
-            progress_bar.update(task, description="[bold green]All images processing finished![/bold green]\n") # Update progress bar to completion status
+            
+            # exception flag and exception information
+            exception_occurred = threading.Event()
+            exception = None
+                        
+            # process thread function
+            def Process():
+                nonlocal exception_occurred, exception
+                try:
+                    self.workbench.ProcessAllImage(self.family)
+                except Exception as e:
+                    # set the exception flag and store the exception information
+                    exception_occurred.set()
+                    exception = e
+            
+            # monitor thread function
+            def Monitor():
+                nonlocal exception_occurred, exception
+                while True:
+                    done_count, total_count = self.workbench.GetProgressStatistics()
+                    progress_bar.update(task, completed=done_count, total=total_count)
+                    # check if exception occurred or all images are processed
+                    if exception_occurred.is_set() or done_count == total_count: break
+                    time.sleep(0.5)
+            
+            # create and start threads
+            process_thread = threading.Thread(target=Process, daemon=True)
+            monitor_thread = threading.Thread(target=Monitor, daemon=True)
+            process_thread.start()
+            monitor_thread.start()
+            # wait for threads to finish
+            process_thread.join()
+            monitor_thread.join()
+            
+            # update progress bar based on whether an exception occurred
+            if exception_occurred.is_set():
+                progress_bar.update(task, description=f"[bold red]Processing failed, for an error occurred[/bold red]\n")
+                raise exception
+            else:
+                progress_bar.update(task, description="[bold green]All images processing finished![/bold green]\n")
 
     def GenerateEpubTarget(self):
         # Use rich to display post-processing prompt, add spinner icon

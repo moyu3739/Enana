@@ -34,6 +34,16 @@ class ScaleValueInvalidError(OptionsError, ValueError):
     def __init__(self, *args) -> None:
         super().__init__(*args)
 
+class PreScaleValueInvalidError(OptionsError, ValueError):
+    """Raised when the pre-scale value is invalid."""
+    def __init__(self, *args) -> None:
+        super().__init__(*args)
+
+class JobsValueInvalidError(OptionsError, ValueError):
+    """Raised when the jobs value is invalid."""
+    def __init__(self, *args) -> None:
+        super().__init__(*args)
+
 class ImageQualityValueInvalidError(OptionsError, ValueError):
     """Raised when the image quality level value is invalid."""
     def __init__(self, *args) -> None:

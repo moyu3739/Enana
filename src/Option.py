@@ -43,7 +43,10 @@ def ParseOptions(args: list[str]):
     parser.add_argument("-r", "--restart", action="store_true",
                        dest="restart",
                        help="to force reprocessing all images, otherwise continue from interruption of the last time")
-    
+    parser.add_argument("-j", "--jobs", action="store", type=int, default=1,
+                       dest="jobs",
+                       help="number of parallel jobs, default=1")
+
     # If no arguments are provided, show help information
     if len(args) == 0: 
         parser.print_help()
@@ -67,7 +70,11 @@ def ParseOptions(args: list[str]):
     # Check the range of -q parameter
     if not 0 <= options.quality <= 100:
         raise ImageQualityValueInvalidError(f"Image quality level must be in range [0, 100], but got {options.quality}.")
-    
+    if options.pre_scale <= 0:
+        raise PreScaleValueInvalidError(f"Pre-scaling factor must be greater than 0, but got {options.pre_scale}.")
+    if options.jobs <= 0:
+        raise JobsValueInvalidError(f"Number of parallel jobs must be greater than 0, but got {options.jobs}.")
+
     # If no output path is provided, use the directory of input path,
     # output filename will be input filename with suffix "_enana"
     if options.output_path is None:
