@@ -83,7 +83,7 @@ family
 
 ```bash
 cd src
-python main.py -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
+python main.py -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-ps PRE_SCALE] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
 ```
 
 ### 参数说明
@@ -139,7 +139,7 @@ python main.py -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulk
 从 [releases](https://github.com/moyu3739/Enana/releases) 获取可执行程序。
 
 ```bash
-enana -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
+enana -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-ps PRE_SCALE] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
 ```
 
 ### 参数说明

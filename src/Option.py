@@ -4,7 +4,7 @@ from Error import *
 
 
 def ParseOptions(args: list[str]):
-    usage = f"{USAGE_PROG} -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]"
+    usage = f"{USAGE_PROG} -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-ps PRE_SCALE] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]"
     parser = argparse.ArgumentParser(prog=APP_NAME, usage=usage)
 
     parser.add_argument("-v", "--version", action="store_true",

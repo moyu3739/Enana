@@ -103,6 +103,7 @@ def CmdMain(args: list[str] = sys.argv[1:]):
 
 """
 python src/main.py -h
+python src/main.py -v
 python src/main.py -lf
 python src/main.py -lm
 python src/main.py -i "test.jpg"

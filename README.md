@@ -83,7 +83,7 @@ family
 
 ```bash
 cd src
-python main.py -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
+python main.py -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-ps PRE_SCALE] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
 ```
 
 ### Parameter Description
@@ -139,7 +139,7 @@ python main.py -i book.epub -o book_enhanced.epub -s 2.0 -f realesrgan-ncnn-vulk
 Get the executable program from [releases](https://github.com/moyu3739/Enana/releases).
 
 ```bash
-enana -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
+enana -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-ps PRE_SCALE] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]
 ```
 
 ### Parameter Description
