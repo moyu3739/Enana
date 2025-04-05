@@ -4,7 +4,7 @@ import sys
 
 
 APP_NAME = "enana" # E NAtive Neural Amplifier
-VERSION = "0.2.1" # Version number
+VERSION = "0.2.2" # Version number
 
 # if running with python
 if sys.argv[0].lower().endswith(".py"):
