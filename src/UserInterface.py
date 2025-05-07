@@ -82,11 +82,11 @@ class CmdUserInterface:
             else:
                 progress_bar.update(task, description="[bold green]All images processing finished![/bold green]\n")
 
-    def GenerateEpubTarget(self):
+    def GenerateTarget(self):
         # Use rich to display post-processing prompt, add spinner icon
         spinner = Spinner('dots', text="[bold blue]Generating target file...[/bold blue]")
         with Live(spinner, refresh_per_second=10, console=self.console) as live:
-            self.workbench.GenerateEpubTarget()
+            self.workbench.GenerateTarget()
             # Modify the final text, remove spinner icon
             live.update("[bold green]  Generating target file finished![/bold green]\n")
 

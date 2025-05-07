@@ -8,12 +8,11 @@ class RealEsrganNcnnVulkan(Family):
     """Real-ESRGAN-ncnn-vulkan super-resolution model family"""
     family_name = "realesrgan-ncnn-vulkan"
     description = "Real-ESRGAN-ncnn-vulkan is a Real-time Image Super-Resolution Model based on Efficient Residual Block." # family description information
-    supported_image_exts = [".jpg", ".png", ".webp"]
+    supported_image_exts = [".jpg", ".jpeg", ".png", ".webp"]
 
     def __init__(self, options: dict):
         super().__init__(options)
-        self.CheckIOOptions()
-        self.CheckModelOptions()
+        self.CheckOptions()
 
     def ProcessImage(self, input_file: str, output_file: str):
         """

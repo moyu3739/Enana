@@ -13,22 +13,8 @@ class Family(abc.ABC):
     def __init__(self, options: dict):
         self.options = options
         self.model_scale: int = None # Model scaling factor
-
-    def CheckIOOptions(self):
-        """
-        Check if the IO options meet the requirements, throw an exception if not
-        """
-        # Check if the input file exists
-        if not FileExist(self.options["input_path"]):
-            raise InputFileNotFoundError(f"Input file '{self.options["input_path"]}' does not exist or is not a file.")
-        # Check if the input file is an EPUB file
-        if GetFileExt(self.options["input_path"]).lower() != ".epub":
-            raise NotEpubFileError(f"Input file '{self.options["input_path"]}' is not an EPUB file.")
-        # Check if the output file path already exists as a directory
-        if DirExist(self.options["output_path"]):
-            raise OutputPathIsDirError(f"Output path '{self.options["output_path"]}' already exists as a directory.")
     
-    def CheckModelOptions(self):
+    def CheckOptions(self):
         """
         Check if the model options meet the requirements,
         meanwhile fill in default options if necessary
@@ -43,7 +29,7 @@ class Family(abc.ABC):
 
         # The model name must be in the list of available models
         if self.options["model"] not in self.GetAllModels():
-            raise ModelNotFoundError(f"Model '{self.options["model"]}' is not an available models for family '{self.family_name}'.")
+            raise ModelNotFoundError(f"'{self.options["model"]}' is not an available model for family '{self.family_name}'.")
         
         # Confirm the actual scaling factor (float) and the model scaling factor (integer)
         self.model_scale = self.ParseScaleFromModelName(self.options["model"])
@@ -127,12 +113,11 @@ def MakeCommonFamilyClass(family_name_: str, description_: str = None):
         family_name = family_name_
         description = f"Family '{family_name_}' is a local but not specifically implemented family. So you should use it with caution."\
                       if description_ is None else description_
-        supported_image_exts = [".jpg", ".png", ".webp"]
+        supported_image_exts = [".jpg", ".jpeg", ".png", ".webp"]
         
         def __init__(self, options: dict):
             super().__init__(options)
-            self.CheckIOOptions()
-            self.CheckModelOptions()
+            self.CheckOptions()
 
         def ProcessImage(self, input_file: str, output_file: str):
             """

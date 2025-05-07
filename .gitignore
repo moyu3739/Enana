@@ -1,4 +1,4 @@
-# ignore all files at root
+# ignore all files at root except some specific ones
 /*
 !/*/
 !/.gitignore

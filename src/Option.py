@@ -4,7 +4,7 @@ from Error import *
 
 
 def ParseOptions(args: list[str]):
-    usage = f"{USAGE_PROG} -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-ps PRE_SCALE] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-r]"
+    usage = f"{USAGE_PROG} -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-b] [-p] [-ps PRE_SCALE] [-s SCALE] [-f FAMILY] [-m MODEL] [-q QUALITY] [-j JOBS] [-r]"
     parser = argparse.ArgumentParser(prog=APP_NAME, usage=usage)
 
     parser.add_argument("-v", "--version", action="store_true",
@@ -22,6 +22,9 @@ def ParseOptions(args: list[str]):
     parser.add_argument("-o", "--output", action="store", type=str,
                        dest="output_path",
                        help=f"output file path (optional, default is the input filename with \"_{APP_NAME}\" suffix)")
+    parser.add_argument("-b", "--batch", action="store_true",
+                       dest="batch",
+                       help="to process files in batches (-i use regex to match files; -o use '?' as input file name without extension and '*' as its extension)")
     parser.add_argument("-p", "--preview", action="store_true",
                        dest="preview",
                        help="to output preview image. If you use this option, the program will choose one image in your EPUB file and output its original and processed copy to the output directory.")
@@ -39,13 +42,13 @@ def ParseOptions(args: list[str]):
                        help="name of the super-resolution model, default value depends on the selected family")
     parser.add_argument("-q", "--quality", action="store", type=int, default=75,
                        dest="quality",
-                       help="image compression quality level (0-100), default=75")
+                       help="JPEG image compression quality level (0-100), default=75")
+    parser.add_argument("-j", "--jobs", action="store", type=int, default=2,
+                       dest="jobs",
+                       help="number of parallel jobs, default=2")
     parser.add_argument("-r", "--restart", action="store_true",
                        dest="restart",
                        help="to force reprocessing all images, otherwise continue from interruption of the last time")
-    parser.add_argument("-j", "--jobs", action="store", type=int, default=1,
-                       dest="jobs",
-                       help="number of parallel jobs, default=1")
 
     # If no arguments are provided, show help information
     if len(args) == 0: 
@@ -75,13 +78,13 @@ def ParseOptions(args: list[str]):
     if options.jobs <= 0:
         raise JobsValueInvalidError(f"Number of parallel jobs must be greater than 0, but got {options.jobs}.")
 
-    # If no output path is provided, use the directory of input path,
-    # output filename will be input filename with suffix "_enana"
-    if options.output_path is None:
-        output_dir = GetFileDir(options.input_path)
-        output_file_name = f"{GetFileNameWithoutExt(options.input_path)}_{APP_NAME}"
-        output_ext = GetFileExt(options.input_path)
-        options.output_path = f"{output_dir}/{output_file_name}{output_ext}"
+    # # If no output path is provided, use the directory of input path,
+    # # output filename will be input filename with suffix "_enana"
+    # if options.output_path is None:
+    #     output_dir = GetFileDir(options.input_path)
+    #     output_file_name = f"{GetFileNameWithoutExt(options.input_path)}_{APP_NAME}"
+    #     output_ext = GetFileExt(options.input_path)
+    #     options.output_path = f"{output_dir}/{output_file_name}{output_ext}"
     
     return vars(options)
 

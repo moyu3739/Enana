@@ -9,8 +9,8 @@ class InputFileNotFoundError(OptionsError, FileNotFoundError):
     def __init__(self, *args) -> None:
         super().__init__(*args)
 
-class NotEpubFileError(OptionsError):
-    """Raised when the file is not an EPUB file."""
+class UnsupportedSourceTypeError(OptionsError):
+    """Raised when the source type is not supported."""
     def __init__(self, *args) -> None:
         super().__init__(*args)
 

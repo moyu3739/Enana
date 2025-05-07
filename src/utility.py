@@ -1,10 +1,9 @@
 import os
-import zipfile
 import sys
 
 
 APP_NAME = "enana" # E NAtive Neural Amplifier
-VERSION = "0.2.2" # Version number
+VERSION = "0.3.2" # Version number
 
 # if running with python
 if sys.argv[0].lower().endswith(".py"):
@@ -27,6 +26,7 @@ def UnpackZip(zip_path: str, extract_folder: str):
         zip_path: Path of the ZIP file
         extract_folder: Target directory for extraction
     """
+    import zipfile
     # Open ZIP file
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         # Extract files to specified directory
@@ -39,6 +39,7 @@ def PackZip(src_folder: str, zip_path: str):
         src_folder: Path of the source directory
         zip_path: Path of the ZIP file
     """
+    import zipfile
     # Create ZIP file
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_ref:
         # Traverse all files in the directory
@@ -253,6 +254,169 @@ def SearchFiles(dir_path: str, exts: list[str], relative: bool = False) -> list[
                 files.append(file_path)
     return files
 
+def SearchFilesRegex(dir_path: str, regex: str, relative: bool = False) -> list[str]:
+    """
+    Search for files matching the specified regex in a directory
+    Args:
+        dir_path: Directory path
+        regex: Regular expression to match relative path to `dir_path`
+        relative: Whether to return relative paths (True) or absolute paths (False)
+        return: List of file paths that fully match the specified regex
+    """
+    import re
+    # Check if directory exists
+    if not os.path.isdir(dir_path):
+        raise FileNotFoundError(f"Directory '{dir_path}' does not exist or is not a directory.")
+    # Search for files matching the specified regex
+    files = []
+    for root, _, filenames in os.walk(dir_path):
+        for filename in filenames:
+            file_path = os.path.join(root, filename)
+            if re.fullmatch(regex, file_path):
+                if relative:
+                    file_path = os.path.relpath(file_path, dir_path)
+                files.append(file_path)
+    return files
+
+
+##################################################################
+##                 Functions for PDF Operations                 ##
+##################################################################
+
+def PdfExtractImages(pdf_path: str, output_dir: str, jpg_quality: int = 95):
+    """
+    Extract images from PDF file and save them to specified directory
+    
+    Args:
+        pdf_path: PDF file path
+        output_dir: Output directory path
+    """
+    from pymupdf import Document as PdfDoc
+    from pymupdf import Page as PdfPage
+    from pymupdf import Pixmap as PdfPixmap
+
+    # make sure the output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+    # open the PDF file
+    doc = PdfDoc(pdf_path)
+    
+    # traverse each page
+    for page in doc:
+        # get image list
+        image_list = page.get_images(full=True)
+        
+        # traverse each image in the page
+        for img_info in image_list:
+            # get image xref
+            xref = img_info[0]
+            
+            # extract image bytes and smask
+            base_image = doc.extract_image(xref)
+            image_bytes = base_image["image"]
+            image_smask = base_image["smask"]
+            image_ext = base_image["ext"]
+            # print(f"xref={xref}, ext={image_ext}, smask={image_smask}")
+
+            # without mask, save directly
+            if image_smask == 0:
+                image_path = f"{output_dir}/{xref}.{image_ext}"
+                pix = PdfPixmap(image_bytes)
+                pix.save(image_path, jpg_quality=jpg_quality)
+            # with mask, save with alpha channel
+            else:
+                image_path = f"{output_dir}/{xref}.png"
+                pix = PdfPixmap(image_bytes)
+                mask = PdfPixmap(doc.extract_image(image_smask)["image"])
+                pix_a = PdfPixmap(pix, mask)
+                pix_a.save(image_path)
+    
+    doc.close()
+
+def PdfReplaceOneImage(page, xref: int, filename=None, pixmap=None, stream=None):
+    """
+    Replace the image referred to by xref.
+
+    Args:
+        xref: the xref of the image to replace.
+        filename, pixmap, stream: exactly one of these must be provided. The
+            meaning being the same as in Page.insert_image.
+    """
+    from pymupdf import Document as PdfDoc
+    from pymupdf import Page as PdfPage
+    from pymupdf import Pixmap as PdfPixmap
+
+    doc = page.parent  # the owning document
+    if not doc.xref_is_image(xref):
+        raise ValueError("xref not an image")  # insert new image anywhere in page
+    if bool(filename) + bool(stream) + bool(pixmap) != 1:
+        raise ValueError("Exactly one of filename/stream/pixmap must be given")
+    new_xref = page.insert_image(
+        page.rect, filename=filename, stream=stream, pixmap=pixmap
+    )
+    doc.xref_copy(new_xref, xref)  # copy over new to old
+    page.delete_image(new_xref) # delete the new image reference
+    last_contents_xref = page.get_contents()[-1]
+
+    # new image insertion has created a new /Contents source,
+    # which we will set to spaces now
+    doc.update_stream(last_contents_xref, b" ")
+    page._image_info = None  # clear cache of extracted image information
+
+    
+
+def PdfReplaceImages(pdf_path: str, images: dict[int, str], output_pdf_path: str):
+    """
+    Replace images in PDF file with specified images
+    
+    Args:
+        pdf_path: original PDF path
+        images: dict{xref: image path}
+        output_pdf_path: output PDF path
+    """
+    from pymupdf import Document as PdfDoc
+    from pymupdf import Page as PdfPage
+    from pymupdf import Pixmap as PdfPixmap
+
+    # open the PDF file
+    doc = PdfDoc(pdf_path)
+
+    # traverse each page, collect all images in the PDF
+    all_images: list[tuple[PdfPage, int]] = []
+    for page_num in range(len(doc)):
+        page = doc[page_num]
+        image_list = page.get_images(full=True)
+        for img_info in image_list:
+            xref = img_info[0]
+            all_images.append((page, xref))
+        
+    # traverse each image in the PDF, replace it with the corresponding image
+    for page, xref in all_images:
+        image_path = images.get(xref)
+        if image_path is None: continue
+        PdfReplaceOneImage(page, xref, filename=image_path)
+    
+    # save the modified PDF
+    doc.ez_save(output_pdf_path, deflate_images=False, garbage=4)
+    doc.close()
+
+def PdfGetFirstImage(pdf_path: str) -> tuple[int, dict] | tuple[None, None]:
+    """
+    Get the xref and information of the first image in the PDF file.
+    """
+    from pymupdf import Document as PdfDoc
+    from pymupdf import Page as PdfPage
+    from pymupdf import Pixmap as PdfPixmap
+
+    # open the PDF file
+    doc = PdfDoc(pdf_path)
+    # traverse each page
+    for page in doc:
+        image_list = page.get_images(full=True) # get image list
+        if len(image_list) > 0:
+            xref = image_list[0][0]
+            return xref, doc.extract_image(xref)
+    return None, None
+
 
 ##############################################################
 ##                      Other Functions                     ##
@@ -277,4 +441,11 @@ if __name__ == "__main__":
     # for file in files:
     #     print(file)
 
-    DeleteDir("test")
+    # DeleteDir("test")
+
+    dir_path = "."
+    regex = r".*\.epub"
+    files = SearchFilesRegex(dir_path, regex, True)
+    for file in files:
+        print(file)
+    print(len(files))

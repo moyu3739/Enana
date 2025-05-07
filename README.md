@@ -99,7 +99,7 @@ python main.py -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] 
 - `-s, --scale`: scaling factor (floating number), range and default value depends on the selected model
 - `-f, --family`: family name of super-resolution models, default=realesrgan-ncnn-vulkan
 - `-m, --model`: name of the super-resolution model, default value depends on the selected family
-- `-q, --quality`: image compression quality level (0-100), default=75
+- `-q, --quality`: JPEG image compression quality level (0-100), default=75
 - `-r, --restart`: to force reprocessing all images, **otherwise continue from interruption of the last time**
 
 ### Examples
@@ -155,7 +155,7 @@ enana -h | -v | -lf | -lm [-f FAMILY] | -i INPUT_PATH [-o OUTPUT_PATH] [-p] [-ps
 - `-s, --scale`: scaling factor (floating number), range and default value depends on the selected model
 - `-f, --family`: family name of super-resolution models, default=realesrgan-ncnn-vulkan
 - `-m, --model`: name of the super-resolution model, default value depends on the selected family
-- `-q, --quality`: image compression quality level (0-100), default=75
+- `-q, --quality`: JPEG image compression quality level (0-100), default=75
 - `-r, --restart`: to force reprocessing all images, **otherwise continue from interruption of the last time**
 
 ### Examples

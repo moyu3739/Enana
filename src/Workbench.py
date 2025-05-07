@@ -1,4 +1,4 @@
-import threading
+import abc
 import concurrent.futures
 from PIL import Image
 from utility import *
@@ -9,14 +9,15 @@ from Progress import Progress
 
 class Workbench:
     """Workbench class"""
+    source_type = None # Source type, file type to be processed
 
     def __init__(self, options):
         self.options = options
-        self.book_name = GetFileNameWithoutExt(self.options["input_path"])
+        self.file_name = GetFileName(self.options["input_path"])
         if options["preview"]:
-            self.workbench_dir = f"{ROOT}/workbench/.preview/{self.book_name}" # working directory
+            self.workbench_dir = f"{ROOT}/workbench/.preview/{self.file_name}" # working directory
         else:
-            self.workbench_dir = f"{ROOT}/workbench/{self.book_name}" # working directory
+            self.workbench_dir = f"{ROOT}/workbench/{self.file_name}" # working directory
         self.progress = Progress()
 
     def CleanupWorkbench(self):
@@ -26,6 +27,17 @@ class Workbench:
         # Delete the working directory
         if DirExist(self.workbench_dir): DeleteDir(self.workbench_dir)
 
+    def CheckOptions(self):
+        """
+        Check if the IO options meet the requirements, throw an exception if not
+        """
+        # Check if the input file exists
+        if not FileExist(self.options["input_path"]):
+            raise InputFileNotFoundError(f"Input file '{self.options["input_path"]}' does not exist or is not a file.")
+        # Check if the output file path already exists as a directory
+        if DirExist(self.options["output_path"]):
+            raise OutputPathIsDirError(f"Output path '{self.options["output_path"]}' already exists as a directory.")
+
     def WorkbenchInitialized(self) -> bool:
         """
         Check if the workbench exists
@@ -33,28 +45,13 @@ class Workbench:
         # progress.json existing is a sign that the workbench has been initialized
         return FileExist(f"{self.workbench_dir}/progress.json")
 
+    @abc.abstractmethod
     def InitWorkbench(self, image_exts: list[str]):
         """
         Args:
             image_exts: List of image file extensions to be processed, e.g. ['.jpg', '.png']
         """
-        if DirExist(self.workbench_dir): DeleteDir(self.workbench_dir) # Delete the working directory if it exists
-        MakeDir(self.workbench_dir) # Create the working directory
-
-        # Copy source file to working directory
-        CopyFile(self.options["input_path"], f"{self.workbench_dir}/o.epub")
-        # Unpack source file
-        UnpackZip(f"{self.workbench_dir}/o.epub", f"{self.workbench_dir}/original")
-        if not self.options["preview"]:
-            CopyDir(f"{self.workbench_dir}/original", f"{self.workbench_dir}/processed")
-        # Get image list
-        images = SearchFiles(f"{self.workbench_dir}/original", image_exts, relative=True)
-        self.progress.LoadTasks(images)
-        if len(images) == 0:
-            raise FileCorruptedError(f"Input file '{self.options["input_path"]}' is corrupted or it has no images.")
-
-        # Save progress
-        self.WriteProgress()
+        pass
 
     def ProcessAllImage(self, family: Family):
         """Returns a generator that yields the number of completed images and total image count each time"""
@@ -71,29 +68,21 @@ class Workbench:
             # if a sub-thread raises an exception, it will be re-raised here
             list(executor.map(Process, range(self.options["jobs"])))
 
-    def GenerateEpubTarget(self):
+    @abc.abstractmethod
+    def GenerateTarget(self):
         """
-        Generate EPUB target file
+        Generate target file
         """
-        # Compress files to output directory
-        target_path = self.options["output_path"]
-        tmp_target_path = f"{GetFileDir(target_path)}/${GetFileNameWithoutExt(target_path)}.tmp"
-        MakeDir(GetFileDir(target_path))
-        PackZip(f"{self.workbench_dir}/processed", tmp_target_path)
-        MoveFile(tmp_target_path, target_path, exist_ok=True)
-        # Delete working directory
-        self.CleanupWorkbench()
+        pass
 
     def GeneratePreviewImage(self, family: Family):
         """
         Generate preview image
         """
-        # Get the preview image name
-        preview_image_relpath = self.GetPreviewImage()
-        preview_image_ext = GetFileExt(preview_image_relpath)
-        # Process image
-        original_path  = f"{self.workbench_dir}/original/{preview_image_relpath}"
-        processed_path = f"{self.workbench_dir}/preview{preview_image_ext}"
+        # Get the preview image input and output path
+        original_path, processed_path = self.GetPreviewImageIOPath()
+        preview_image_ext = GetFileExt(processed_path)
+
         self.ScaleAndCompress(original_path, processed_path, self.options["pre_scale"], 100)
         family.ProcessImage(processed_path, processed_path)
         self.ScaleAndCompress(processed_path, processed_path, self.options["scale"] / family.model_scale, self.options["quality"])        
@@ -115,11 +104,10 @@ class Workbench:
         """
         Process one image, returns whether there is another image to process
         """
-        image_relpath = self.progress.GetOneTaskOfStatusAndUpdate("waiting", "processing")
-        if image_relpath is None: return False # No more images to process
-        original_path = f"{self.workbench_dir}/original/{image_relpath}"
-        processed_path = f"{self.workbench_dir}/processed/{image_relpath}"
-        
+        task = self.progress.GetOneTaskOfStatusAndUpdate("waiting", "processing")
+        if task is None: return False # No more images to process
+        original_path, processed_path = self.GetImageIOPath(task)
+
         self.WriteProgress()
         # Pre-scale image
         self.ScaleAndCompress(original_path, processed_path, self.options["pre_scale"], 100)
@@ -128,18 +116,23 @@ class Workbench:
         # Scale and compress image
         self.ScaleAndCompress(processed_path, processed_path, self.options["scale"] / family.model_scale, self.options["quality"])
 
-        self.progress.Update(image_relpath, "done")
+        self.progress.Update(task, "done")
         self.WriteProgress()
         return True
-    
-    def GetPreviewImage(self) -> str:
+
+    @abc.abstractmethod
+    def GetPreviewImageIOPath(self) -> tuple[str, str]:
         """
-        Get the preview image path.
-        If there is a cover image, return it. Otherwise, return the first image.
+        Get the preview image input and output path.
         """
-        for image_relpath in self.progress.tasks.keys():
-            if GetFileNameWithoutExt(image_relpath).lower() == "cover": return image_relpath
-        return list(self.progress.tasks.keys())[0] # Return the first image name if no cover image is found
+        pass
+
+    @abc.abstractmethod
+    def GetImageIOPath(self, task: str) -> tuple[str, str]:
+        """
+        Get the image input and output path.
+        """
+        pass
 
     def ReadProgress(self):
         self.progress.Load(f"{self.workbench_dir}/progress.json")
@@ -183,5 +176,4 @@ class Workbench:
             case "JPEG": img.save(output_file, quality=quality_level, optimize=True)
             case "PNG": img.save(output_file, compress_level=7, optimize=True)
             case _: img.save(output_file, quality=quality_level, optimize=True)
-
 
