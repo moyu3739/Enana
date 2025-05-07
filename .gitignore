@@ -15,6 +15,7 @@ icon/__discard/
 # ignore all temporary files and folders
 __pycache__/
 workbench/
+test/
 family/*.*
 
 # ignore all non-open source models
