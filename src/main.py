@@ -47,10 +47,15 @@ def CmdMain(args: list[str] = sys.argv[1:]):
                 ui.Print(f"  - [green]{family}[/green]")
         # List all models of specified family
         elif options["list_model"]:
-            model_list = FamilyList.GetFamilyClass(options["family"]).GetAllModels()
+            family_class = FamilyList.GetFamilyClass(options["family"])
+            model_list = family_class.GetAllModels()
+            default_model = family_class.GetDefaultModel()
             ui.Print(f"[bold blue]All available models of family '{options['family']}':[/bold blue]")
             for model in model_list:
-                ui.Print(f"  - [green]{model}[/green]")
+                if model == default_model:
+                    ui.Print(f"  - [green]{model}[/green] [bold yellow](default)[/bold yellow]")
+                else:
+                    ui.Print(f"  - [green]{model}[/green]")
         # Process
         else:
             # get Family class from family name
@@ -103,11 +108,11 @@ def CmdMain(args: list[str] = sys.argv[1:]):
                 except FileCorruptedError as e:
                     workbench.CleanupWorkbench() # Clean up workbench
                     ui.Print(f"[bold red]Runtime error:[/bold red] {e}")
-                    exit_code = 51
+                    # exit_code = 51
                 except ModelRuntimeError as e:
                     workbench.CleanupWorkbench() # Clean up workbench
                     ui.Print(f"[bold red]Runtime error:[/bold red] {e}")
-                    exit_code = 52
+                    # exit_code = 52
 
             if options["batch"]:
                 ui.Print("[bold magenta]All matched files processed.[/bold magenta]")
@@ -167,11 +172,11 @@ def CmdMain(args: list[str] = sys.argv[1:]):
     except KeyboardInterrupt:
         ui.Print("\n[bold red]Process interrupted by user.[/bold red]")
         exit_code = 2
-    # except Exception as e:
-    #     if workbench.progress.GetTaskNumOfStatus("done") == 0:
-    #         workbench.CleanupWorkbench() # Clean up workbench
-    #     ui.Print(f"[bold red]Error:[/bold red] {e}")
-    #     exit_code = 1
+    except Exception as e:
+        if workbench.progress.GetTaskNumOfStatus("done") == 0:
+            workbench.CleanupWorkbench() # Clean up workbench
+        ui.Print(f"[bold red]Error:[/bold red] {e}")
+        exit_code = 1
     
     sys.exit(exit_code)
 
@@ -207,10 +212,12 @@ python src/main.py -i ".*安達與島村.*卷0[1-9].epub" -s 2 -j 2 -b
 """
 if __name__ == "__main__":
     # args = [
-    #     "-i", ".*安達與島村.*卷0[1-9].epub",
+    #     "-i", "[安達與島村(重製版)]卷01.epub",
     #     # "-o", "% HD.epub",
-    #     "-s", "2",
-    #     "-j", "2",
+    #     "-f", "traditional",
+    #     "-m", "bicubic",
+    #     "-s", "1.5",
+    #     "-p",
     # ]
     # CmdMain(args)
 

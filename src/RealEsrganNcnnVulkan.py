@@ -58,6 +58,13 @@ class RealEsrganNcnnVulkan(Family):
         Get the description information of the Real-ESRGAN family
         """
         return cls.description
+    
+    @classmethod
+    def GetDefaultModel(cls) -> list[str]:
+        """
+        Get the default model name of this family
+        """
+        return "realesr-animevideov3"
 
 
 

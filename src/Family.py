@@ -12,20 +12,20 @@ class Family(abc.ABC):
 
     def __init__(self, options: dict):
         self.options = options
-        self.model_scale: int = None # Model scaling factor
+        self.model_scale: int | float = None # Model scaling factor
     
     def CheckOptions(self):
         """
         Check if the model options meet the requirements,
         meanwhile fill in default options if necessary
         """
-        # If no model name is given, use the first model by default,
+        # If no model name is given, use the default,
         # if no available model, throw an exception
         if self.options["model"] is None:
             model_list = self.GetAllModels()
             if len(model_list) == 0:
                 raise NoAvailableModelError(f"No available model for family '{self.family_name}'.")
-            self.options["model"] = model_list[0]
+            self.options["model"] = self.GetDefaultModel()
 
         # The model name must be in the list of available models
         if self.options["model"] not in self.GetAllModels():
@@ -85,6 +85,14 @@ class Family(abc.ABC):
     def GetAllModels(cls) -> list[str]:
         """
         Get all model names of this family
+        """
+        pass
+
+    @classmethod
+    @abc.abstractmethod
+    def GetDefaultModel(cls) -> list[str]:
+        """
+        Get the default model name of this family
         """
         pass
 
@@ -174,5 +182,15 @@ def MakeCommonFamilyClass(family_name_: str, description_: str = None):
             else:
                 return GetDirList(f"{ROOT}/family/{cls.family_name}", "dir")
             
+        @classmethod
+        def GetDefaultModel(cls) -> list[str]:
+            """
+            Get the default model name of this family
+            """
+            models = cls.GetAllModels()
+            if len(models) == 0:
+                raise NoAvailableModelError(f"No available model for family '{cls.family_name}'.")
+            return models[0]
+
     return CommonFamily
 

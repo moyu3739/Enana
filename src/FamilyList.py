@@ -1,11 +1,13 @@
 from Error import *
 from Family import Family, MakeCommonFamilyClass
 
+from Traditional import Traditional
 from RealEsrganNcnnVulkan import RealEsrganNcnnVulkan
 # TODO: add more family
 
 
 ADAPTED_FAMILY_LIST = {
+    Traditional.family_name: Traditional,
     RealEsrganNcnnVulkan.family_name: RealEsrganNcnnVulkan,
     # TODO: add more family
 }
